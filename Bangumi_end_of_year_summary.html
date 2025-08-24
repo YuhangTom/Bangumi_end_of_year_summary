@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangumi 年度小结生成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        .placeholder-image {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23374151FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            transition: background-color 0.2s;
+        }
+        .placeholder-image:hover {
+            background-color: rgba(55, 65, 81, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white">Bangumi 年度小结生成器</h1>
+            <p class="text-gray-400 mt-2">创建你独一无二的动画年度总结</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Section 1: Basic Info -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">基本数据</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="form-group">
+                        <label for="year" class="block text-sm font-medium text-gray-400 mb-1">年份</label>
+                        <input type="number" id="year" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
+                    </div>
+                    <div class="form-group">
+                        <label for="watching-count" class="block text-sm font-medium text-gray-400 mb-1">追番数</label>
+                        <input type="number" id="watching-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="今年新番数">
+                    </div>
+                    <div class="form-group">
+                        <label for="rewatched-count" class="block text-sm font-medium text-gray-400 mb-1">补番数</label>
+                        <input type="number" id="rewatched-count" class="w-full bg-gray-600 border border-gray-500 rounded-md p-2 cursor-not-allowed" placeholder="自动计算" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="watched-count" class="block text-sm font-medium text-gray-400 mb-1">看番数</label>
+                        <input type="number" id="watched-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="今年总看番">
+                    </div>
+                    <div class="form-group">
+                        <label for="total-watched" class="block text-sm font-medium text-gray-400 mb-1">累计看番数</label>
+                        <input type="number" id="total-watched" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="历史总计">
+                    </div>
+                     <div class="form-group">
+                        <label for="bangumi-username" class="block text-sm font-medium text-gray-400 mb-1">Bangumi 用户名</label>
+                        <input type="text" id="bangumi-username" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="你的用户名">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Rankings -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度排名</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="rank-air-1" class="manual-container"></div>
+                    <div id="rank-end-1" class="manual-container"></div>
+                    <div id="rank-end-2" class="manual-container"></div>
+                    <div id="rank-end-3" class="manual-container"></div>
+                </div>
+            </section>
+
+            <!-- Section 3: Characters & CP -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度角色</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="char-female" class="manual-container"></div>
+                    <div id="char-male" class="manual-container"></div>
+                    <div id="char-other" class="manual-container"></div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">CP</label>
+                        <div class="flex space-x-2">
+                            <div id="cp-1" class="w-1/2 manual-container" data-label-hidden="true"></div>
+                            <div id="cp-2" class="w-1/2 manual-container" data-label-hidden="true"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 4: Music -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐与声优</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="music-op" class="manual-container"></div>
+                    <div id="music-ed" class="manual-container"></div>
+                    <div id="music-in" class="manual-container"></div>
+                    <div id="music-artist" class="manual-container"></div>
+                    <div id="staff-seiyuu-female" class="manual-container"></div>
+                    <div id="staff-seiyuu-male" class="manual-container"></div>
+                </div>
+            </section>
+
+            <!-- Section 5: Episodes -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                    <h2 class="text-2xl font-semibold">年度单集</h2>
+                    <button id="add-episode-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
+                        + 添加单集
+                    </button>
+                </div>
+                <div id="episodes-container" class="space-y-4">
+                    <!-- Episode entries will be added here -->
+                </div>
+            </section>
+            
+            <div class="text-center pt-4">
+                 <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg">
+                    生成年度小结
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="manual-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-xl font-semibold">手动输入条目</h3>
+                <button class="close-modal-btn text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label for="manual-name" class="block text-sm font-medium text-gray-400 mb-1">条目名称</label>
+                    <input type="text" id="manual-name" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="例如：孤独摇滚！">
+                </div>
+                <div>
+                    <label for="manual-image-url" class="block text-sm font-medium text-gray-400 mb-1">图片地址</label>
+                    <input type="text" id="manual-image-url" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="粘贴图片链接...">
+                </div>
+            </div>
+            <div class="p-4 bg-gray-700/50 text-right">
+                <button id="manual-confirm-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="summary-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+         <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col relative">
+            <div class="absolute top-4 right-4 z-10">
+                 <button class="close-modal-btn bg-gray-700 text-gray-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center text-xl leading-none">&times;</button>
+            </div>
+            <div id="summary-content" class="p-8 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemConfig = {
+                'rank-air-1': { label: '年度排名1 (播出)' }, 'rank-end-1': { label: '年度排名1 (完结)' },
+                'rank-end-2': { label: '年度排名2 (完结)' }, 'rank-end-3': { label: '年度排名3 (完结)' },
+                'char-female': { label: '女性角色' }, 'char-male': { label: '男性角色' },
+                'char-other': { label: '其他角色' }, 'cp-1': { label: 'CP 1' }, 'cp-2': { label: 'CP 2' },
+                'music-op': { label: 'OP' }, 'music-ed': { label: 'ED' }, 'music-in': { label: 'IN' },
+                'music-artist': { label: '歌手' }, 'staff-seiyuu-female': { label: '女性声优' },
+                'staff-seiyuu-male': { label: '男性声优' },
+            };
+
+            const containers = document.querySelectorAll('.manual-container');
+            containers.forEach(container => {
+                const id = container.id;
+                const config = itemConfig[id];
+                if (!config) return;
+                const showLabel = !container.dataset.labelHidden;
+                container.innerHTML = `
+                    ${showLabel ? `<label class="block text-sm font-medium text-gray-400 mb-1">${config.label}</label>` : ''}
+                    <div class="relative manual-trigger" data-target-id="${id}">
+                        <img id="img-${id}" class="w-full h-40 object-cover rounded-md bg-gray-700 hidden">
+                        <div id="placeholder-${id}" class="w-full h-40 rounded-md bg-gray-700 flex items-center justify-center placeholder-image cursor-pointer">
+                             <span class="text-gray-500 text-sm">点击添加</span>
+                        </div>
+                        <input type="hidden" id="data-name-${id}"><input type="hidden" id="data-img-${id}">
+                    </div>`;
+            });
+
+            const manualModal = document.getElementById('manual-modal');
+            const summaryModal = document.getElementById('summary-modal');
+            const manualConfirmBtn = document.getElementById('manual-confirm-btn');
+            const addEpisodeBtn = document.getElementById('add-episode-btn');
+            const episodesContainer = document.getElementById('episodes-container');
+            let currentTargetId = null;
+            let episodeCounter = 0;
+
+            const watchingCountInput = document.getElementById('watching-count');
+            const watchedCountInput = document.getElementById('watched-count');
+            const rewatchedCountInput = document.getElementById('rewatched-count');
+
+            function calculateRewatched() {
+                const watching = parseInt(watchingCountInput.value, 10) || 0;
+                const watched = parseInt(watchedCountInput.value, 10) || 0;
+                const rewatched = watched - watching;
+                rewatchedCountInput.value = rewatched >= 0 ? rewatched : 0;
+            }
+
+            watchingCountInput.addEventListener('input', calculateRewatched);
+            watchedCountInput.addEventListener('input', calculateRewatched);
+            calculateRewatched(); // Initial calculation
+
+            function selectItem(name, imageUrl) {
+                if (!currentTargetId) return;
+                const img = document.getElementById(`img-${currentTargetId}`);
+                const placeholder = document.getElementById(`placeholder-${currentTargetId}`);
+                const nameInput = document.getElementById(`data-name-${currentTargetId}`);
+                const imgInput = document.getElementById(`data-img-${currentTargetId}`);
+                img.src = imageUrl;
+                img.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                nameInput.value = name;
+                imgInput.value = imageUrl;
+                manualModal.classList.add('hidden');
+            }
+
+            document.body.addEventListener('click', (e) => {
+                const trigger = e.target.closest('.manual-trigger');
+                if (trigger) {
+                    currentTargetId = trigger.dataset.targetId;
+                    document.getElementById('manual-name').value = document.getElementById(`data-name-${currentTargetId}`).value;
+                    document.getElementById('manual-image-url').value = document.getElementById(`data-img-${currentTargetId}`).value;
+                    manualModal.classList.remove('hidden');
+                }
+            });
+
+            manualConfirmBtn.addEventListener('click', () => {
+                const name = document.getElementById('manual-name').value;
+                const imageUrl = document.getElementById('manual-image-url').value;
+                if (name && imageUrl) {
+                    selectItem(name, imageUrl);
+                } else {
+                    const nameInput = document.getElementById('manual-name');
+                    if (!name) nameInput.focus();
+                    else document.getElementById('manual-image-url').focus();
+                }
+            });
+
+            addEpisodeBtn.addEventListener('click', () => {
+                episodeCounter++;
+                const animeId = `ep-anime-${episodeCounter}`;
+                const entry = document.createElement('div');
+                entry.className = 'episode-entry flex items-end space-x-4 p-3 bg-gray-700/50 rounded-lg';
+                entry.id = `episode-${episodeCounter}`;
+                entry.innerHTML = `
+                    <div class="w-1/3 manual-container">
+                        <label class="block text-sm font-medium text-gray-400 mb-1">动画</label>
+                        <div class="relative manual-trigger" data-target-id="${animeId}">
+                            <img id="img-${animeId}" class="w-full h-24 object-cover rounded-md bg-gray-700 hidden">
+                            <div id="placeholder-${animeId}" class="w-full h-24 rounded-md bg-gray-700 flex items-center justify-center placeholder-image cursor-pointer">
+                                 <span class="text-gray-500 text-xs">点击添加</span>
+                            </div>
+                            <input type="hidden" id="data-name-${animeId}"><input type="hidden" id="data-img-${animeId}">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label for="ep-number-${episodeCounter}" class="block text-sm font-medium text-gray-400 mb-1">集数</label>
+                        <input type="number" id="ep-number-${episodeCounter}" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="Ep.">
+                    </div>
+                `;
+                episodesContainer.appendChild(entry);
+            });
+
+            document.querySelectorAll('.close-modal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    manualModal.classList.add('hidden');
+                    summaryModal.classList.add('hidden');
+                });
+            });
+
+            const generateBtn = document.getElementById('generate-summary');
+            generateBtn.addEventListener('click', () => {
+                const data = { 
+                    year: document.getElementById('year').value || 'N/A', 
+                    watching: document.getElementById('watching-count').value || '0', 
+                    watched: document.getElementById('watched-count').value || '0', 
+                    rewatched: document.getElementById('rewatched-count').value || '0',
+                    total: document.getElementById('total-watched').value || '0',
+                    username: document.getElementById('bangumi-username').value || 'Anonymous',
+                    items: {},
+                    episodes: []
+                };
+
+                Object.keys(itemConfig).forEach(id => { 
+                    data.items[id] = { 
+                        label: itemConfig[id].label, 
+                        name: document.getElementById(`data-name-${id}`).value, 
+                        img: document.getElementById(`data-img-${id}`).value 
+                    }; 
+                });
+                
+                document.querySelectorAll('.episode-entry').forEach((entry, index) => {
+                    const counter = index + 1;
+                    const animeId = `ep-anime-${counter}`;
+                    data.episodes.push({
+                        name: document.getElementById(`data-name-${animeId}`).value,
+                        img: document.getElementById(`data-img-${animeId}`).value,
+                        number: document.getElementById(`ep-number-${counter}`).value
+                    });
+                });
+
+                renderSummary(data);
+                summaryModal.classList.remove('hidden');
+            });
+
+            function renderSummary(data) {
+                const placeholder = 'https://placehold.co/225x318/1f2937/374151?text=未选择';
+                const getItemHTML = (id) => { const item = data.items[id]; if (!item) return ''; const img = item.img || placeholder; const name = item.name || '未填写'; return `<div class="text-center"><p class="text-sm text-gray-400 mb-2">${item.label}</p><img src="${img}" class="w-full h-40 object-cover rounded-md mx-auto shadow-md" alt="${name}"><p class="mt-2 text-sm font-semibold truncate" title="${name}">${name}</p></div>`; };
+                const getCpHTML = () => { const i1 = data.items['cp-1'], i2 = data.items['cp-2']; const img1 = i1.img || placeholder, n1 = i1.name || '?', img2 = i2.img || placeholder, n2 = i2.name || '?'; const fn = `${n1} & ${n2}`; return `<div class="text-center"><p class="text-sm text-gray-400 mb-2">CP</p><div class="flex justify-center items-end space-x-[-20px]"><img src="${img1}" class="w-24 h-32 object-cover rounded-md shadow-md z-10 transform -rotate-6" alt="${n1}"><img src="${img2}" class="w-24 h-32 object-cover rounded-md shadow-md transform rotate-6" alt="${n2}"></div><p class="mt-2 text-sm font-semibold truncate" title="${fn}">${fn}</p></div>`; };
+                const getEpisodeHTML = (episode) => {
+                    const img = episode.img || placeholder;
+                    const name = episode.name || '未填写动画';
+                    const number = episode.number ? ` Ep.${episode.number}` : '';
+                    const fullName = `${name}${number}`;
+                    return `<div class="text-center"><img src="${img}" class="w-full h-28 object-cover rounded-md mx-auto shadow-md" alt="${name}"><p class="mt-2 text-xs font-semibold truncate" title="${fullName}">${fullName}</p></div>`;
+                };
+
+                const episodesHTML = data.episodes.length > 0 ? `<div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度单集</h3><div class="grid grid-cols-3 md:grid-cols-5 gap-4">${data.episodes.map(getEpisodeHTML).join('')}</div></div>` : '';
+                const year = data.year;
+
+                document.getElementById('summary-content').innerHTML = `<div class="bg-gray-900 text-white p-6 rounded-lg"><h2 class="text-center text-3xl font-bold mb-1">${year} Bangumi 年度小结</h2><p class="text-center text-indigo-400 mb-4">@${data.username}</p><div class="text-center text-gray-400 mb-6 flex justify-center space-x-4 md:space-x-6 text-sm"><span>${year}年追番数: <strong>${data.watching}</strong></span><span>${year}年补番数: <strong>${data.rewatched}</strong></span><span>${year}年看番数: <strong>${data.watched}</strong></span><span>累计看番数: <strong>${data.total}</strong></span></div><div class="space-y-6"><div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度动画</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4">${getItemHTML('rank-air-1')}${getItemHTML('rank-end-1')}${getItemHTML('rank-end-2')}${getItemHTML('rank-end-3')}</div></div><div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度角色</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-start">${getItemHTML('char-female')}${getItemHTML('char-male')}${getItemHTML('char-other')}${getCpHTML()}</div></div><div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度音乐与声优</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4">${getItemHTML('music-op')}${getItemHTML('music-ed')}${getItemHTML('music-in')}${getItemHTML('music-artist')}${getItemHTML('staff-seiyuu-female')}${getItemHTML('staff-seiyuu-male')}</div></div>${episodesHTML}</div></div>`;
+            }
+        });
+    </script>
+</body>
+</html>
