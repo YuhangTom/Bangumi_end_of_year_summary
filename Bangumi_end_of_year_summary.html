@@ -108,10 +108,11 @@
             </section>
             
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度声优</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度声优 & 歌手</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div id="staff-seiyuu-female" class="manual-container"></div>
                     <div id="staff-seiyuu-male" class="manual-container"></div>
+                    <div id="music-artist" class="manual-container"></div>
                 </div>
             </section>
 
@@ -142,13 +143,6 @@
                         <div id="music-in-1" class="manual-container"></div>
                         <div id="music-in-2" class="manual-container"></div>
                         <div id="music-in-3" class="manual-container"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">年度歌手</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div id="music-artist" class="manual-container"></div>
                     </div>
                 </div>
             </section>
@@ -224,21 +218,18 @@
 
     <script>
         // --- GLOBAL SCOPE VARIABLES ---
-        var episodeCounter = 0; // Fixes reference error
+        var episodeCounter = 0; 
         var currentTargetId = null;
         var currentApiType = 'subject';
         var tempApiData = null;
 
-        // Global functions for inline onclick handlers
         window.removeEpisode = function(btn) { 
             btn.closest('.episode-entry').remove(); 
-            // Trigger save manually since this is outside the main listener loop mostly
             const event = new Event('input', { bubbles: true });
             document.body.dispatchEvent(event);
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            // UPDATED ITEM CONFIG FOR 3 MUSIC ITEMS
             const itemConfig = {
                 'rank-air-1': { label: '年度排名1 (播出)', type: 'subject' }, 
                 'rank-end-1': { label: '年度排名1 (完结)', type: 'subject' },
@@ -261,12 +252,13 @@
                 'music-in-2': { label: 'IN 2', type: 'subject' },
                 'music-in-3': { label: 'IN 3', type: 'subject' },
                 
-                'music-artist': { label: '歌手', type: 'person' }, 
+                // Seiyuu & Artist (Merged)
                 'staff-seiyuu-female': { label: '女性声优', type: 'person' },
                 'staff-seiyuu-male': { label: '男性声优', type: 'person' },
+                'music-artist': { label: '年度歌手', type: 'person' }, 
             };
 
-            // Init Manual Containers - FIX: Transparent background for placeholder
+            // Init Manual Containers
             document.querySelectorAll('.manual-container').forEach(container => {
                 const id = container.id;
                 const config = itemConfig[id];
@@ -361,7 +353,7 @@
                 if (e.target.matches('input') || e.target.matches('.save-target')) saveState();
             });
 
-            // --- Sync Logic (FIXED: NO CUSTOM HEADERS to avoid CORS issues) ---
+            // --- Sync Logic ---
             async function fetchUserStats(username, targetYear) {
                 let finishedThisYear = 0; 
                 let newShowsFinished = 0; 
@@ -375,7 +367,6 @@
                     try {
                         if (syncStatus) syncStatus.textContent = `正在扫描第 ${page + 1} 页历史数据...`;
                         const offset = page * limit;
-                        // NO HEADERS
                         const res = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=${limit}&offset=${offset}`);
                         if (!res.ok) break;
                         const data = await res.json();
@@ -524,43 +515,60 @@
                 }
             });
 
-            // --- HTML Template (Fixed Black Background) ---
+            // --- HTML Template ---
             function getTemplateHTML(data) {
                 const toCors = (url) => url && !url.includes('placehold') && !url.startsWith('data') 
                     ? `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp&w=400` 
                     : (url || 'https://placehold.co/300x400/1f2937/374151?text=Empty');
 
-                const cardItem = (id) => {
+                // MODIFIED cardItem: Moves label OUTSIDE and ABOVE the bg-gray-800 card
+                const cardItem = (id, label = null) => {
                     const item = data.items[id];
+                    
+                    const labelHTML = label 
+                        ? `<div class="mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">${label}</div>` 
+                        : '';
+
                     return `
-                    <div class="flex flex-col items-center bg-gray-800 rounded-lg p-3 border border-gray-700 h-full">
-                        <div class="w-full h-52 rounded-md overflow-hidden flex items-center justify-center mb-2 bg-transparent">
-                            <img src="${toCors(item?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
-                        </div>
-                        <div class="min-h-[2.5rem] flex items-center justify-center w-full">
-                            <p class="text-sm font-bold text-center leading-tight text-gray-200 title-text w-full">${item?.name || '-'}</p>
+                    <div class="flex flex-col h-full">
+                        ${labelHTML}
+                        <div class="flex flex-col items-center bg-gray-800 rounded-lg p-3 border border-gray-700 flex-1">
+                            <div class="w-full h-52 rounded-md overflow-hidden flex items-center justify-center mb-2 bg-transparent relative">
+                                <img src="${toCors(item?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                            </div>
+                            <div class="min-h-[2.5rem] flex items-center justify-center w-full">
+                                <p class="text-sm font-bold text-center leading-tight text-gray-200 title-text w-full">${item?.name || '-'}</p>
+                            </div>
                         </div>
                     </div>`;
                 };
 
-                const cpCard = () => {
+                // MODIFIED cpCard: Adds label OUTSIDE the card
+                const cpCard = (label = 'CP') => {
                     const i1 = data.items['cp-1'], i2 = data.items['cp-2'];
                     const n1 = i1?.name || '';
                     const n2 = i2?.name || '';
                     const cpName = (n1 && n2) ? `${n1} x ${n2}` : 'CP';
                     
+                    const labelHTML = label 
+                        ? `<div class="mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">${label}</div>` 
+                        : '';
+
                     return `
-                    <div class="col-span-1 bg-gray-800 rounded-lg p-3 border border-gray-700 flex flex-col items-center justify-between h-full">
-                        <div class="flex justify-center items-end h-52 w-full px-0 gap-1">
-                            <div class="w-1/2 h-full rounded overflow-hidden flex items-center justify-center bg-transparent">
-                                <img src="${toCors(i1?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                    <div class="col-span-1 flex flex-col h-full">
+                        ${labelHTML}
+                        <div class="bg-gray-800 rounded-lg p-3 border border-gray-700 flex flex-col items-center justify-between flex-1">
+                            <div class="flex justify-center items-end h-52 w-full px-0 gap-1">
+                                <div class="w-1/2 h-full rounded overflow-hidden flex items-center justify-center bg-transparent">
+                                    <img src="${toCors(i1?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                                </div>
+                                <div class="w-1/2 h-full rounded overflow-hidden flex items-center justify-center bg-transparent">
+                                    <img src="${toCors(i2?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                                </div>
                             </div>
-                            <div class="w-1/2 h-full rounded overflow-hidden flex items-center justify-center bg-transparent">
-                                <img src="${toCors(i2?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                            <div class="min-h-[2.5rem] flex items-center justify-center w-full">
+                                <p class="text-sm font-bold text-center text-pink-400 w-full title-text">${cpName}</p>
                             </div>
-                        </div>
-                        <div class="min-h-[2.5rem] flex items-center justify-center w-full">
-                            <p class="text-sm font-bold text-center text-pink-400 w-full title-text">${cpName}</p>
                         </div>
                     </div>`;
                 };
@@ -606,12 +614,21 @@
 
                     <div class="mb-8">
                         <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-pink-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度角色</h2></div>
-                        <div class="grid grid-cols-4 gap-4">${cardItem('char-female')}${cardItem('char-male')}${cardItem('char-other')}${cpCard()}</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            ${cardItem('char-female', '女性角色')}
+                            ${cardItem('char-male', '男性角色')}
+                            ${cardItem('char-other', '其他角色')}
+                            ${cpCard('CP')}
+                        </div>
                     </div>
 
                     <div class="mb-8">
-                        <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-yellow-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度声优</h2></div>
-                        <div class="grid grid-cols-4 gap-4"><div class="col-start-2">${cardItem('staff-seiyuu-female')}</div><div>${cardItem('staff-seiyuu-male')}</div></div>
+                        <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-yellow-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度声优 & 歌手</h2></div>
+                        <div class="grid grid-cols-3 gap-6">
+                            ${cardItem('staff-seiyuu-female', '女性声优')}
+                            ${cardItem('staff-seiyuu-male', '男性声优')}
+                            ${cardItem('music-artist', '年度歌手')}
+                        </div>
                     </div>
 
                     <div class="mb-8">
@@ -629,10 +646,6 @@
                                 <h3 class="text-sm font-medium text-gray-400 mb-2">IN</h3>
                                 <div class="grid grid-cols-3 gap-4">${cardItem('music-in-1')}${cardItem('music-in-2')}${cardItem('music-in-3')}</div>
                             </div>
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-400 mb-2">歌手</h3>
-                                <div class="grid grid-cols-4 gap-4">${cardItem('music-artist')}</div>
-                            </div>
                         </div>
                     </div>
 
@@ -642,7 +655,6 @@
                 </div>`;
             }
 
-            // --- Episode Add (Fixed scope) ---
             function addEpisode(data={}) {
                 episodeCounter++;
                 const uniqueId = episodeCounter;
@@ -652,7 +664,6 @@
                 entry.id = `episode-${uniqueId}`;
                 const imgDisplayClass = data.img ? '' : 'hidden';
                 const placeDisplayClass = data.img ? 'hidden' : '';
-                // FIX: Use transparent background for placeholder
                 entry.innerHTML = `
                     <div class="w-1/3 manual-container">
                         <label class="block text-xs font-medium text-gray-400 mb-1">动画</label>
@@ -675,7 +686,6 @@
             }
             document.getElementById('add-episode-btn').addEventListener('click', () => { addEpisode(); saveState(); });
 
-            // --- Common Event Listeners ---
             document.querySelectorAll('.close-modal-btn').forEach(b => b.addEventListener('click', () => smartModal.classList.add('hidden')));
             document.getElementById('close-result-modal').addEventListener('click', () => summaryModal.classList.add('hidden'));
             document.body.addEventListener('click', (e) => {
