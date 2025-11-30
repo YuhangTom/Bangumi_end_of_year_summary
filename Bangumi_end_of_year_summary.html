@@ -9,55 +9,35 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1f2937; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-        .placeholder-image {
-            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23374151FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-            transition: all 0.2s;
-        }
-        .placeholder-image:hover {
-            background-color: rgba(55, 65, 81, 0.5);
-            border-color: #6366f1;
-        }
         .loader {
             border: 3px solid #f3f3f3;
             border-radius: 50%;
             border-top: 3px solid #6366f1;
-            width: 20px;
-            height: 20px;
-            -webkit-animation: spin 1s linear infinite; /* Safari */
+            width: 20px; height: 20px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* 移除 truncate，允许换行 */
-        .title-text {
-            word-break: break-word;
-            white-space: normal;
-            line-height: 1.4;
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .title-text { word-break: break-word; white-space: normal; line-height: 1.3; }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen">
+<body class="bg-gray-900 text-gray-200 min-h-screen pb-24">
 
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white">Bangumi 年度小结生成器</h1>
-            <p class="text-gray-400 mt-2">ID 精准填充 · 全历史年份支持 · 自动保存</p>
+            <p class="text-gray-400 mt-2">ID 精准填充 · 智能数据同步 · 一键生成长图</p>
         </header>
 
         <main class="space-y-8">
-            <!-- Section 1: Basic Info with Auto-Sync -->
+            <!-- Section 1: Basic Info -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <h2 class="text-2xl font-semibold">基本数据</h2>
+                    <h2 class="text-2xl font-semibold">1. 基本数据</h2>
                     <div class="flex items-center space-x-2">
                         <input type="text" id="bangumi-username" class="save-target bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="输入用户名">
                         <button id="sync-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center transition">
@@ -103,9 +83,9 @@
                 <p class="text-xs text-green-500 mt-1 hidden" id="save-indicator">已自动保存草稿</p>
             </section>
 
-            <!-- Section 2: Rankings -->
+            <!-- Rankings -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度排名</h2>
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">2. 年度排名</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div id="rank-air-1" class="manual-container"></div>
                     <div id="rank-end-1" class="manual-container"></div>
@@ -114,9 +94,9 @@
                 </div>
             </section>
 
-            <!-- Section 3: Characters & CP -->
+            <!-- Characters -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度角色</h2>
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">3. 年度角色</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div id="char-female" class="manual-container"></div>
                     <div id="char-male" class="manual-container"></div>
@@ -131,114 +111,115 @@
                 </div>
             </section>
             
-            <!-- Section 4: Music & Voice -->
+            <!-- Voice Actors -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐与声优</h2>
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">4. 年度声优</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div id="music-op" class="manual-container"></div>
-                    <div id="music-ed" class="manual-container"></div>
-                    <div id="music-in" class="manual-container"></div>
-                    <div id="music-artist" class="manual-container"></div>
                     <div id="staff-seiyuu-female" class="manual-container"></div>
                     <div id="staff-seiyuu-male" class="manual-container"></div>
                 </div>
             </section>
 
-            <!-- Section 5: Episodes -->
+            <!-- Music -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">5. 年度音乐</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="music-op" class="manual-container"></div>
+                    <div id="music-ed" class="manual-container"></div>
+                    <div id="music-in" class="manual-container"></div>
+                    <div id="music-artist" class="manual-container"></div>
+                </div>
+            </section>
+
+            <!-- Episodes -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <h2 class="text-2xl font-semibold">年度单集</h2>
-                    <button id="add-episode-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
-                        + 添加单集
-                    </button>
+                    <h2 class="text-2xl font-semibold">6. 年度单集</h2>
+                    <button id="add-episode-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">+ 添加单集</button>
                 </div>
                 <div id="episodes-container" class="space-y-4"></div>
             </section>
             
-            <div class="text-center pt-4 pb-8">
-                 <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg ring-4 ring-indigo-500/30">
-                    预览年度小结
+            <div class="fixed bottom-0 left-0 right-0 p-4 bg-gray-900 border-t border-gray-800 flex justify-center z-40 shadow-xl">
+                 <button id="generate-summary" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg transition-transform transform hover:scale-105 flex items-center">
+                    <span class="mr-2">✨</span> 生成年度小结图片
                 </button>
             </div>
         </main>
     </div>
 
-    <!-- Smart Input Modal -->
+    <!-- Modals (Smart Input) -->
     <div id="smart-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
         <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all scale-100">
             <div class="p-5 border-b border-gray-700 flex justify-between items-center bg-gray-800 rounded-t-xl">
                 <h3 class="text-xl font-bold text-white">添加条目内容</h3>
                 <button class="close-modal-btn text-gray-400 hover:text-white text-2xl leading-none transition">&times;</button>
             </div>
-            
             <div class="p-6">
-                <!-- Tabs -->
                 <div class="flex space-x-4 border-b border-gray-700 mb-4">
-                    <button class="tab-btn px-4 py-2 text-indigo-400 border-b-2 border-indigo-500 font-medium" data-tab="id">ID 自动获取 (推荐)</button>
+                    <button class="tab-btn px-4 py-2 text-indigo-400 border-b-2 border-indigo-500 font-medium" data-tab="id">ID 自动获取</button>
                     <button class="tab-btn px-4 py-2 text-gray-400 hover:text-gray-200" data-tab="manual">手动输入</button>
                 </div>
-
-                <!-- Tab Content: ID -->
                 <div id="tab-id" class="tab-content space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Bangumi Subject ID / Person ID</label>
-                        <div class="flex gap-2">
-                            <input type="number" id="api-id-input" class="flex-1 bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="例如: 394597">
-                            <button id="fetch-api-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-md font-medium transition flex items-center">
-                                获取
-                                <div id="api-loader" class="loader ml-2 hidden" style="width: 16px; height: 16px; border-width: 2px;"></div>
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">提示：ID 是网址中 subject/ 或 character/ 后的数字。</p>
+                    <div class="flex gap-2">
+                        <input type="number" id="api-id-input" class="flex-1 bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="Bangumi ID">
+                        <button id="fetch-api-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-md font-medium transition flex items-center">获取<div id="api-loader" class="loader ml-2 hidden" style="width: 16px; height: 16px; border-width: 2px;"></div></button>
                     </div>
-                    <!-- Preview Area -->
                     <div id="api-preview" class="hidden mt-4 p-3 bg-gray-700/50 rounded-lg flex gap-3 items-center border border-gray-600">
-                        <img id="api-preview-img" src="" class="w-12 h-16 object-cover rounded bg-gray-800">
-                        <div class="flex-1 min-w-0">
-                            <p id="api-preview-title" class="font-bold text-white truncate"></p>
-                            <p class="text-xs text-green-400">获取成功</p>
+                        <div class="w-12 h-16 flex items-center justify-center overflow-hidden bg-gray-900">
+                            <!-- Preview uses flex + max-size for NO CROP -->
+                            <img id="api-preview-img" class="max-w-full max-h-full" style="width:auto;height:auto;">
                         </div>
-                        <button id="confirm-api-btn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">确认使用</button>
+                        <div class="flex-1 min-w-0"><p id="api-preview-title" class="font-bold text-white truncate"></p></div>
+                        <button id="confirm-api-btn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">使用</button>
                     </div>
                     <p id="api-error" class="hidden text-red-400 text-sm mt-2"></p>
                 </div>
-
-                <!-- Tab Content: Manual -->
                 <div id="tab-manual" class="tab-content space-y-4 hidden">
-                    <div>
-                        <label for="manual-name" class="block text-sm font-medium text-gray-300 mb-1">条目名称</label>
-                        <input type="text" id="manual-name" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="例如：孤独摇滚！">
-                    </div>
-                    <div>
-                        <label for="manual-image-url" class="block text-sm font-medium text-gray-300 mb-1">图片地址</label>
-                        <input type="text" id="manual-image-url" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="粘贴图片链接...">
-                    </div>
-                    <div class="pt-2 text-right">
-                        <button id="manual-confirm-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md transition">确认添加</button>
-                    </div>
+                    <input type="text" id="manual-name" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 text-white" placeholder="名称">
+                    <input type="text" id="manual-image-url" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 text-white" placeholder="图片URL">
+                    <div class="pt-2 text-right"><button id="manual-confirm-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md transition">确认添加</button></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Summary Modal -->
-    <div id="summary-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
-         <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col relative border border-gray-700">
-            <div class="absolute top-4 right-4 z-20 flex gap-2">
-                 <button class="close-modal-btn bg-gray-700/80 text-gray-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center text-xl leading-none backdrop-blur-md transition hover:bg-gray-600">&times;</button>
+    <!-- Result Modal -->
+    <div id="summary-modal" class="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
+         <div class="relative w-full max-w-4xl h-full flex flex-col items-center justify-center">
+            <button id="close-result-modal" class="absolute top-4 right-4 bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-gray-600 z-[60] shadow-lg cursor-pointer">&times;</button>
+            <div id="generation-loader" class="flex flex-col items-center justify-center text-white">
+                <div class="loader mb-4" style="width: 50px; height: 50px; border-width: 5px;"></div>
+                <p class="text-xl font-medium">正在生成高清图片...</p>
             </div>
-            <!-- 加载中提示 -->
-            <div id="generation-loader" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-800/90 rounded-xl hidden">
-                <div class="loader mb-4" style="width: 40px; height: 40px; border-width: 4px;"></div>
-                <p class="text-white font-medium">正在生成图片...</p>
-                <p class="text-gray-400 text-sm mt-2">首次加载图片可能需要几秒钟</p>
+            <div id="result-container" class="hidden w-full h-full flex flex-col items-center overflow-hidden">
+                <div class="text-white mb-4 text-center">
+                    <h3 class="text-xl font-bold">生成成功！</h3>
+                    <p class="text-sm text-gray-400">电脑端右键“图片另存为”，手机端长按保存</p>
+                </div>
+                <div class="w-full flex-1 overflow-auto custom-scrollbar flex justify-center bg-gray-900/50 rounded-lg border border-gray-800 p-4" id="image-wrapper"></div>
             </div>
-            <!-- 显示区域：初始显示HTML(隐藏)，生成后显示img -->
-            <div id="summary-content" class="p-8 overflow-y-auto custom-scrollbar flex justify-center"></div>
         </div>
     </div>
 
+    <!-- Hidden Rendering Stage -->
+    <div id="render-stage" class="absolute top-0 left-[-9999px] z-[-1] w-[900px] bg-gray-900 text-white"></div>
+
     <script>
+        // --- GLOBAL SCOPE VARIABLES ---
+        var episodeCounter = 0; // Fixes reference error
+        var currentTargetId = null;
+        var currentApiType = 'subject';
+        var tempApiData = null;
+
+        // Global functions for inline onclick handlers
+        window.removeEpisode = function(btn) { 
+            btn.closest('.episode-entry').remove(); 
+            // Trigger save manually since this is outside the main listener loop mostly
+            const event = new Event('input', { bubbles: true });
+            document.body.dispatchEvent(event);
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const itemConfig = {
                 'rank-air-1': { label: '年度排名1 (播出)', type: 'subject' }, 
@@ -258,9 +239,8 @@
                 'staff-seiyuu-male': { label: '男性声优', type: 'person' },
             };
 
-            // Initialize Containers
-            const containers = document.querySelectorAll('.manual-container');
-            containers.forEach(container => {
+            // Init Manual Containers - FIX: Transparent background for placeholder
+            document.querySelectorAll('.manual-container').forEach(container => {
                 const id = container.id;
                 const config = itemConfig[id];
                 if (!config) return;
@@ -268,116 +248,95 @@
                 container.innerHTML = `
                     ${showLabel ? `<label class="block text-sm font-medium text-gray-400 mb-1">${config.label}</label>` : ''}
                     <div class="relative manual-trigger group" data-target-id="${id}" data-api-type="${config.type}">
-                        <img id="img-${id}" class="save-target-img w-full h-40 object-cover rounded-md bg-gray-700 hidden shadow-md">
-                        <div id="placeholder-${id}" class="w-full h-40 rounded-md bg-gray-700/50 border-2 border-dashed border-gray-600 flex flex-col items-center justify-center placeholder-image cursor-pointer group-hover:border-indigo-500 transition-colors">
-                             <svg class="w-8 h-8 text-gray-500 mb-1 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                             <span class="text-gray-500 text-xs group-hover:text-indigo-300">点击添加</span>
+                        <div class="w-full h-40 bg-transparent rounded-md overflow-hidden border border-gray-700 flex items-center justify-center relative">
+                            <!-- Image Container: Hidden by default -->
+                            <div id="img-container-${id}" class="w-full h-full hidden flex items-center justify-center">
+                                <img id="img-${id}" class="save-target-img max-w-full max-h-full" style="width: auto; height: auto;">
+                            </div>
+                            <!-- Placeholder -->
+                            <div id="placeholder-${id}" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 group-hover:text-indigo-400 transition-colors bg-gray-800/30">
+                                 <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                 <span class="text-xs">点击添加</span>
+                            </div>
                         </div>
                         <input type="hidden" id="data-name-${id}" class="save-target"><input type="hidden" id="data-img-${id}" class="save-target">
                     </div>`;
             });
 
-            // --- Elements ---
-            const smartModal = document.getElementById('smart-modal');
-            const summaryModal = document.getElementById('summary-modal');
+            // Input Elements
+            const inputs = {
+                year: document.getElementById('year'),
+                watching: document.getElementById('watching-count'),
+                watched: document.getElementById('watched-count'),
+                rewatched: document.getElementById('rewatched-count'),
+                total: document.getElementById('total-watched'),
+                username: document.getElementById('bangumi-username'),
+                nickname: document.getElementById('user-nickname'),
+                avatar: document.getElementById('user-avatar-preview'),
+                avatarHidden: document.getElementById('user-avatar-url')
+            };
             const episodesContainer = document.getElementById('episodes-container');
-            const generationLoader = document.getElementById('generation-loader');
-            
-            const yearInput = document.getElementById('year');
-            const watchingCountInput = document.getElementById('watching-count');
-            const watchedCountInput = document.getElementById('watched-count');
-            const rewatchedCountInput = document.getElementById('rewatched-count');
-            const totalWatchedInput = document.getElementById('total-watched');
-            const usernameInput = document.getElementById('bangumi-username');
-            const nicknameDisplay = document.getElementById('user-nickname');
-            const avatarPreview = document.getElementById('user-avatar-preview');
-            const avatarUrlHidden = document.getElementById('user-avatar-url');
+            const summaryModal = document.getElementById('summary-modal');
+            const smartModal = document.getElementById('smart-modal');
+            const resultContainer = document.getElementById('result-container');
+            const imageWrapper = document.getElementById('image-wrapper');
+            const loader = document.getElementById('generation-loader');
+            const renderStage = document.getElementById('render-stage');
             const syncStatus = document.getElementById('sync-status');
-            const saveIndicator = document.getElementById('save-indicator');
-            
-            const syncBtn = document.getElementById('sync-user-btn');
-            
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const apiIdInput = document.getElementById('api-id-input');
-            const fetchApiBtn = document.getElementById('fetch-api-btn');
-            const apiLoader = document.getElementById('api-loader');
-            const apiPreview = document.getElementById('api-preview');
-            const apiPreviewImg = document.getElementById('api-preview-img');
-            const apiPreviewTitle = document.getElementById('api-preview-title');
-            const apiError = document.getElementById('api-error');
-            const confirmApiBtn = document.getElementById('confirm-api-btn');
-            const manualConfirmBtn = document.getElementById('manual-confirm-btn');
 
-            let currentTargetId = null;
-            let currentApiType = 'subject'; 
-            let episodeCounter = 0;
-            let tempApiData = null; 
+            // --- Helper: Update Image Display ---
+            function updateImageDisplay(id, url) {
+                const img = document.getElementById(`img-${id}`);
+                const container = document.getElementById(`img-container-${id}`);
+                const ph = document.getElementById(`placeholder-${id}`);
+                if (img && container && ph) {
+                    img.src = url;
+                    container.classList.remove('hidden');
+                    ph.classList.add('hidden');
+                }
+            }
 
-            // --- Caching Logic (LocalStorage) ---
+            // --- State Management ---
             function saveState() {
-                const state = {
-                    inputs: {},
-                    episodes: []
-                };
-                document.querySelectorAll('.save-target').forEach(el => {
-                    state.inputs[el.id] = el.value;
-                });
-                document.querySelectorAll('.episode-entry').forEach((entry, index) => {
-                    const idPart = entry.id.split('-')[1];
-                    const animeId = `ep-anime-${idPart}`;
+                const state = { inputs: {}, episodes: [] };
+                document.querySelectorAll('.save-target').forEach(el => state.inputs[el.id] = el.value);
+                document.querySelectorAll('.episode-entry').forEach((entry) => {
+                    const id = entry.id.split('-')[1];
+                    const animeId = `ep-anime-${id}`;
                     state.episodes.push({
                         name: document.getElementById(`data-name-${animeId}`)?.value || '',
                         img: document.getElementById(`data-img-${animeId}`)?.value || '',
-                        number: document.getElementById(`ep-number-${idPart}`)?.value || ''
+                        number: document.getElementById(`ep-number-${id}`)?.value || ''
                     });
                 });
-                localStorage.setItem('bgm_summary_state', JSON.stringify(state));
-                saveIndicator.classList.remove('hidden');
-                setTimeout(() => saveIndicator.classList.add('hidden'), 2000);
+                localStorage.setItem('bgm_summary_state_v9', JSON.stringify(state));
+                document.getElementById('save-indicator').classList.remove('hidden');
+                setTimeout(() => document.getElementById('save-indicator').classList.add('hidden'), 2000);
             }
 
             function loadState() {
-                const saved = localStorage.getItem('bgm_summary_state');
+                const saved = localStorage.getItem('bgm_summary_state_v9');
                 if (!saved) return;
                 try {
                     const state = JSON.parse(saved);
-                    for (const [id, value] of Object.entries(state.inputs)) {
+                    Object.entries(state.inputs).forEach(([id, val]) => {
                         const el = document.getElementById(id);
                         if (el) {
-                            el.value = value;
-                            if (id.startsWith('data-img-') && value) {
-                                const containerId = id.replace('data-img-', '');
-                                const imgEl = document.getElementById(`img-${containerId}`);
-                                const placeEl = document.getElementById(`placeholder-${containerId}`);
-                                if (imgEl && placeEl) {
-                                    imgEl.src = value;
-                                    imgEl.classList.remove('hidden');
-                                    placeEl.classList.add('hidden');
-                                }
-                            }
+                            el.value = val;
+                            if (id.startsWith('data-img-') && val) updateImageDisplay(id.replace('data-img-', ''), val);
                         }
-                    }
-                    if (state.inputs['user-avatar-url']) {
-                        avatarPreview.src = state.inputs['user-avatar-url'];
-                    }
+                    });
+                    if (state.inputs['user-avatar-url']) inputs.avatar.src = state.inputs['user-avatar-url'];
                     episodesContainer.innerHTML = '';
                     state.episodes.forEach(ep => addEpisode(ep));
                     calculateRewatched();
-                } catch (e) { console.error("Failed to load state", e); }
+                } catch(e) { console.error(e); }
             }
-
             document.body.addEventListener('input', (e) => {
-                if (e.target.matches('input') || e.target.matches('.save-target')) { saveState(); }
+                if (e.target.matches('input') || e.target.matches('.save-target')) saveState();
             });
-            const originalApply = applyItemData;
-            applyItemData = function(name, imageUrl) {
-                originalApply(name, imageUrl); 
-                saveState();
-            };
-            loadState();
 
-            // --- Sync Logic ---
+            // --- Sync Logic (FIXED: NO CUSTOM HEADERS to avoid CORS issues) ---
             async function fetchUserStats(username, targetYear) {
                 let finishedThisYear = 0; 
                 let newShowsFinished = 0; 
@@ -391,10 +350,10 @@
                     try {
                         if (syncStatus) syncStatus.textContent = `正在扫描第 ${page + 1} 页历史数据...`;
                         const offset = page * limit;
+                        // NO HEADERS
                         const res = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=${limit}&offset=${offset}`);
                         if (!res.ok) break;
                         const data = await res.json();
-                        
                         if (data.data.length === 0) { hasMore = false; break; }
 
                         for (const item of data.data) {
@@ -416,401 +375,310 @@
                 return { finishedThisYear, newShowsFinished };
             }
 
-            syncBtn.addEventListener('click', async () => {
-                const username = usernameInput.value.trim();
-                const targetYear = yearInput.value.toString();
+            document.getElementById('sync-user-btn').addEventListener('click', async () => {
+                const username = inputs.username.value.trim();
+                const targetYear = inputs.year.value.toString();
                 if (!username) { alert("请输入 Bangumi 用户名"); return; }
                 
-                const btnText = syncBtn.querySelector('.btn-text');
-                const loader = syncBtn.querySelector('.loader');
+                const btn = document.getElementById('sync-user-btn');
+                const btnText = btn.querySelector('.btn-text');
+                const loader = btn.querySelector('.loader');
                 btnText.textContent = "同步中...";
-                syncStatus.textContent = "正在连接 Bangumi...";
                 loader.classList.remove('hidden');
-                syncBtn.disabled = true;
+                btn.disabled = true;
 
                 try {
+                    // Profile
                     const userRes = await fetch(`https://api.bgm.tv/v0/users/${username}`);
                     if (!userRes.ok) throw new Error("用户未找到");
                     const userData = await userRes.json();
                     
-                    nicknameDisplay.value = userData.nickname;
-                    avatarPreview.src = userData.avatar.large;
-                    avatarUrlHidden.value = userData.avatar.large; 
+                    inputs.nickname.value = userData.nickname;
+                    inputs.avatar.src = userData.avatar.large;
+                    inputs.avatarHidden.value = userData.avatar.large; 
 
+                    // Total
                     const totalRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
                     const totalData = await totalRes.json();
-                    if (totalData.total !== undefined) { totalWatchedInput.value = totalData.total; }
+                    if (totalData.total !== undefined) { inputs.total.value = totalData.total; }
 
-                    syncStatus.textContent = `正在分析 ${targetYear} 年数据...`;
+                    // Stats
                     const stats = await fetchUserStats(username, targetYear);
-                    watchedCountInput.value = stats.finishedThisYear;
-                    watchingCountInput.value = stats.newShowsFinished;
+                    inputs.watched.value = stats.finishedThisYear;
+                    inputs.watching.value = stats.newShowsFinished;
                     
                     calculateRewatched();
                     saveState(); 
                     syncStatus.textContent = "同步完成！";
                 } catch (error) {
-                    syncStatus.textContent = "同步出错";
-                    alert("同步失败: " + error.message);
+                    syncStatus.textContent = "同步失败: " + error.message;
                 } finally {
                     btnText.textContent = "同步数据";
                     loader.classList.add('hidden');
-                    syncBtn.disabled = false;
+                    btn.disabled = false;
                     setTimeout(() => { syncStatus.textContent = ""; }, 5000);
                 }
             });
 
             function calculateRewatched() {
-                const watched = parseInt(watchedCountInput.value, 10) || 0;
-                const watching = parseInt(watchingCountInput.value, 10) || 0;
-                const diff = watched - watching;
-                rewatchedCountInput.value = diff >= 0 ? diff : 0;
+                const diff = (parseInt(inputs.watched.value)||0) - (parseInt(inputs.watching.value)||0);
+                inputs.rewatched.value = diff > 0 ? diff : 0;
             }
-            watchingCountInput.addEventListener('input', calculateRewatched);
-            watchedCountInput.addEventListener('input', calculateRewatched);
+            inputs.watched.addEventListener('input', calculateRewatched);
+            inputs.watching.addEventListener('input', calculateRewatched);
 
-            // --- Item Selection ---
-            document.body.addEventListener('click', (e) => {
-                const trigger = e.target.closest('.manual-trigger');
-                if (trigger) {
-                    currentTargetId = trigger.dataset.targetId;
-                    currentApiType = trigger.dataset.apiType || 'subject'; 
-                    apiIdInput.value = '';
-                    apiPreview.classList.add('hidden');
-                    apiError.classList.add('hidden');
-                    document.getElementById('manual-name').value = document.getElementById(`data-name-${currentTargetId}`).value;
-                    document.getElementById('manual-image-url').value = document.getElementById(`data-img-${currentTargetId}`).value;
-                    switchTab('id');
-                    smartModal.classList.remove('hidden');
-                }
-            });
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => { switchTab(btn.dataset.tab); });
-            });
-
-            function switchTab(tabName) {
-                tabBtns.forEach(b => {
-                    if (b.dataset.tab === tabName) {
-                        b.classList.add('text-indigo-400', 'border-indigo-500');
-                        b.classList.remove('text-gray-400');
-                    } else {
-                        b.classList.remove('text-indigo-400', 'border-indigo-500');
-                        b.classList.add('text-gray-400');
+            // --- Generate Image Logic ---
+            document.getElementById('generate-summary').addEventListener('click', async () => {
+                const data = {
+                    year: inputs.year.value || '2025',
+                    watching: inputs.watching.value || '0',
+                    watched: inputs.watched.value || '0',
+                    rewatched: inputs.rewatched.value || '0',
+                    total: inputs.total.value || '0',
+                    nickname: inputs.nickname.value || inputs.username.value,
+                    avatar: inputs.avatar.src,
+                    items: {},
+                    episodes: []
+                };
+                Object.keys(itemConfig).forEach(id => {
+                    data.items[id] = {
+                        name: document.getElementById(`data-name-${id}`).value,
+                        img: document.getElementById(`data-img-${id}`).value
+                    };
+                });
+                document.querySelectorAll('.episode-entry').forEach(entry => {
+                    const id = entry.id.split('-')[1];
+                    const animeId = `ep-anime-${id}`;
+                    const name = document.getElementById(`data-name-${animeId}`)?.value;
+                    if(name) {
+                        data.episodes.push({
+                            name: name,
+                            img: document.getElementById(`data-img-${animeId}`)?.value,
+                            number: document.getElementById(`ep-number-${id}`)?.value
+                        });
                     }
                 });
-                tabContents.forEach(c => c.classList.add('hidden'));
-                document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            }
 
-            fetchApiBtn.addEventListener('click', async () => {
-                const id = apiIdInput.value.trim();
-                if (!id) return;
-                apiLoader.classList.remove('hidden');
-                apiError.classList.add('hidden');
-                apiPreview.classList.add('hidden');
-                tempApiData = null;
+                renderStage.innerHTML = getTemplateHTML(data);
+                
+                // Preload
+                const imgs = renderStage.querySelectorAll('img');
+                const promises = Array.from(imgs).map(img => {
+                    if (img.complete) return Promise.resolve();
+                    return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+                });
+
+                summaryModal.classList.remove('hidden');
+                resultContainer.classList.add('hidden');
+                loader.classList.remove('hidden');
+
+                await Promise.all(promises);
+                await new Promise(r => setTimeout(r, 800));
+
                 try {
-                    let endpoint = `https://api.bgm.tv/v0/subjects/${id}`;
-                    if (currentApiType === 'character') endpoint = `https://api.bgm.tv/v0/characters/${id}`;
-                    if (currentApiType === 'person') endpoint = `https://api.bgm.tv/v0/persons/${id}`;
-                    const res = await fetch(endpoint, { headers: { 'User-Agent': 'BangumiYearReview/1.0' } });
-                    if (!res.ok) throw new Error("ID 未找到或网络错误");
-                    const data = await res.json();
-                    const name = data.name_cn || data.name;
-                    const img = data.images?.large || data.images?.medium || 'https://placehold.co/225x318/1f2937/374151?text=No+Img';
-                    const finalImg = img.startsWith('//') ? `https:${img}` : img;
-                    tempApiData = { name, img: finalImg };
-                    apiPreviewImg.src = finalImg;
-                    apiPreviewTitle.textContent = name;
-                    apiPreview.classList.remove('hidden');
-                } catch (err) {
-                    apiError.textContent = err.message;
-                    apiError.classList.remove('hidden');
-                } finally {
-                    apiLoader.classList.add('hidden');
+                    const canvas = await html2canvas(renderStage, {
+                        useCORS: true,
+                        scale: 3, 
+                        backgroundColor: '#111827',
+                        width: 900,
+                        windowWidth: 900
+                    });
+                    const img = new Image();
+                    img.src = canvas.toDataURL('image/png');
+                    img.className = "w-auto max-w-full h-auto rounded-lg shadow-2xl border border-gray-700";
+                    imageWrapper.innerHTML = '';
+                    imageWrapper.appendChild(img);
+                    loader.classList.add('hidden');
+                    resultContainer.classList.remove('hidden');
+                } catch (e) {
+                    console.error(e);
+                    alert("生成失败");
+                    summaryModal.classList.add('hidden');
                 }
             });
 
-            confirmApiBtn.addEventListener('click', () => {
-                if (tempApiData) {
-                    applyItemData(tempApiData.name, tempApiData.img);
-                    smartModal.classList.add('hidden');
-                }
-            });
+            // --- HTML Template (Fixed Black Background) ---
+            function getTemplateHTML(data) {
+                const toCors = (url) => url && !url.includes('placehold') && !url.startsWith('data') 
+                    ? `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp&w=400` 
+                    : (url || 'https://placehold.co/300x400/1f2937/374151?text=Empty');
 
-            manualConfirmBtn.addEventListener('click', () => {
-                const name = document.getElementById('manual-name').value;
-                const imageUrl = document.getElementById('manual-image-url').value;
-                if (name && imageUrl) {
-                    applyItemData(name, imageUrl);
-                    smartModal.classList.add('hidden');
-                } else {
-                    const nameInput = document.getElementById('manual-name');
-                    if (!name) nameInput.focus();
-                    else document.getElementById('manual-image-url').focus();
-                }
-            });
+                const cardItem = (id) => {
+                    const item = data.items[id];
+                    return `
+                    <div class="flex flex-col items-center bg-gray-800 rounded-lg p-3 border border-gray-700 h-full">
+                        <div class="w-full h-52 rounded-md overflow-hidden flex items-center justify-center mb-2 bg-transparent">
+                            <img src="${toCors(item?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                        </div>
+                        <div class="min-h-[2.5rem] flex items-center justify-center w-full">
+                            <p class="text-sm font-bold text-center leading-tight text-gray-200 title-text w-full">${item?.name || '-'}</p>
+                        </div>
+                    </div>`;
+                };
 
-            var applyItemData = function(name, imageUrl) {
-                if (!currentTargetId) return;
-                const img = document.getElementById(`img-${currentTargetId}`);
-                const placeholder = document.getElementById(`placeholder-${currentTargetId}`);
-                const nameInput = document.getElementById(`data-name-${currentTargetId}`);
-                const imgInput = document.getElementById(`data-img-${currentTargetId}`);
-                img.src = imageUrl;
-                img.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                nameInput.value = name;
-                imgInput.value = imageUrl;
-                smartModal.classList.add('hidden');
+                const cpCard = () => {
+                    const i1 = data.items['cp-1'], i2 = data.items['cp-2'];
+                    return `
+                    <div class="col-span-1 bg-gray-800 rounded-lg p-3 border border-gray-700 flex flex-col items-center justify-between h-full">
+                        <div class="flex justify-center items-end h-40 w-full px-2">
+                            <!-- Removed bg-black -->
+                            <div class="w-1/2 h-full rounded -mr-2 z-10 overflow-hidden flex items-center justify-center bg-transparent">
+                                <img src="${toCors(i1?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                            </div>
+                            <div class="w-1/2 h-full rounded -ml-2 overflow-hidden flex items-center justify-center bg-transparent">
+                                <img src="${toCors(i2?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                            </div>
+                        </div>
+                        <div class="min-h-[2.5rem] flex items-center justify-center w-full">
+                            <p class="text-sm font-bold text-center text-pink-400 w-full title-text">CP</p>
+                        </div>
+                    </div>`;
+                };
+
+                const epItem = (ep) => `
+                    <div class="bg-gray-800 rounded-lg p-2 border border-gray-700 h-full flex flex-col">
+                        <div class="w-full h-28 rounded mb-2 flex items-center justify-center overflow-hidden bg-transparent">
+                            <img src="${toCors(ep.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                        </div>
+                        <div class="text-center mt-auto">
+                            <div class="min-h-[2rem] flex items-center justify-center w-full">
+                                <p class="text-xs font-bold text-gray-300 title-text w-full">${ep.name}</p>
+                            </div>
+                            <p class="text-xs text-indigo-400 font-mono mt-1">Ep.${ep.number}</p>
+                        </div>
+                    </div>`;
+
+                return `
+                <div class="p-8 bg-gray-900 text-white font-sans w-[900px] mx-auto">
+                    <div class="flex items-center justify-between border-b-2 border-gray-700 pb-6 mb-8">
+                        <div class="flex items-center gap-5">
+                            <div class="w-24 h-24 rounded-full border-4 border-indigo-600 bg-gray-800 overflow-hidden flex items-center justify-center">
+                                <img src="${toCors(data.avatar)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
+                            </div>
+                            <div>
+                                <h1 class="text-5xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">${data.year}</h1>
+                                <div class="text-gray-400 font-medium tracking-widest uppercase text-sm mt-1">Animation Year In Review</div>
+                                <div class="text-xl font-bold mt-2 text-white">@${data.nickname}</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 text-right">
+                            <div><div class="text-3xl font-bold text-white">${data.watching}</div><div class="text-xs text-gray-500 uppercase font-bold">追番</div></div>
+                            <div><div class="text-3xl font-bold text-white">${data.rewatched}</div><div class="text-xs text-gray-500 uppercase font-bold">补番</div></div>
+                            <div><div class="text-3xl font-bold text-white">${data.watched}</div><div class="text-xs text-gray-500 uppercase font-bold">年度</div></div>
+                            <div><div class="text-3xl font-bold text-indigo-400">${data.total}</div><div class="text-xs text-gray-500 uppercase font-bold">累计</div></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-indigo-500 mr-3"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度动画</h2></div>
+                        <div class="grid grid-cols-4 gap-4">${cardItem('rank-air-1')}${cardItem('rank-end-1')}${cardItem('rank-end-2')}${cardItem('rank-end-3')}</div>
+                    </div>
+
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-pink-500 mr-3"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度角色</h2></div>
+                        <div class="grid grid-cols-4 gap-4">${cardItem('char-female')}${cardItem('char-male')}${cardItem('char-other')}${cpCard()}</div>
+                    </div>
+
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-yellow-500 mr-3"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度声优</h2></div>
+                        <div class="grid grid-cols-4 gap-4"><div class="col-start-2">${cardItem('staff-seiyuu-female')}</div><div>${cardItem('staff-seiyuu-male')}</div></div>
+                    </div>
+
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-green-500 mr-3"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度音乐</h2></div>
+                        <div class="grid grid-cols-4 gap-4">${cardItem('music-op')}${cardItem('music-ed')}${cardItem('music-in')}${cardItem('music-artist')}</div>
+                    </div>
+
+                    ${data.episodes.length > 0 ? `<div><div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-blue-500 mr-3"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度单集</h2></div><div class="grid grid-cols-5 gap-4">${data.episodes.map(epItem).join('')}</div></div>` : ''}
+                    
+                    <div class="mt-8 pt-4 border-t border-gray-800 text-center text-gray-600 text-xs uppercase tracking-widest">Generated by Bangumi Summary Tool</div>
+                </div>`;
             }
 
-            // --- Episodes Logic ---
-            function addEpisode(data = {}) {
+            // --- Episode Add (Fixed scope) ---
+            function addEpisode(data={}) {
                 episodeCounter++;
-                const animeId = `ep-anime-${episodeCounter}`;
+                const uniqueId = episodeCounter;
+                const animeId = `ep-anime-${uniqueId}`;
                 const entry = document.createElement('div');
                 entry.className = 'episode-entry flex items-end space-x-4 p-3 bg-gray-700/50 rounded-lg border border-gray-600 mb-4';
-                entry.id = `episode-${episodeCounter}`;
-                const initialImg = data.img || '';
-                const initialName = data.name || '';
-                const initialNum = data.number || '';
-                const imgDisplayClass = initialImg ? '' : 'hidden';
-                const placeDisplayClass = initialImg ? 'hidden' : '';
-
+                entry.id = `episode-${uniqueId}`;
+                const imgDisplayClass = data.img ? '' : 'hidden';
+                const placeDisplayClass = data.img ? 'hidden' : '';
+                // FIX: Use transparent background for placeholder
                 entry.innerHTML = `
                     <div class="w-1/3 manual-container">
                         <label class="block text-xs font-medium text-gray-400 mb-1">动画</label>
                         <div class="relative manual-trigger group" data-target-id="${animeId}" data-api-type="subject">
-                            <img id="img-${animeId}" src="${initialImg}" class="save-target-img w-full h-24 object-cover rounded-md bg-gray-700 ${imgDisplayClass}">
-                            <div id="placeholder-${animeId}" class="w-full h-24 rounded-md bg-gray-700 flex flex-col items-center justify-center placeholder-image cursor-pointer border border-dashed border-gray-500 hover:border-indigo-500 ${placeDisplayClass}">
-                                 <span class="text-gray-500 text-xs">点击添加</span>
+                            <div class="w-full h-24 bg-transparent rounded-md overflow-hidden border border-gray-700 flex items-center justify-center relative">
+                                <div id="img-container-${animeId}" class="w-full h-full ${imgDisplayClass} flex items-center justify-center">
+                                    <img id="img-${animeId}" src="${data.img||''}" class="save-target-img max-w-full max-h-full" style="width: auto; height: auto;">
+                                </div>
+                                <div id="placeholder-${animeId}" class="absolute inset-0 flex flex-col items-center justify-center cursor-pointer border border-dashed border-gray-500 text-gray-500 hover:border-indigo-500 ${placeDisplayClass}"><span class="text-xs">添加</span></div>
                             </div>
-                            <input type="hidden" id="data-name-${animeId}" class="save-target" value="${initialName}">
-                            <input type="hidden" id="data-img-${animeId}" class="save-target" value="${initialImg}">
+                            <input type="hidden" id="data-name-${animeId}" class="save-target" value="${data.name||''}"><input type="hidden" id="data-img-${animeId}" class="save-target" value="${data.img||''}">
                         </div>
                     </div>
                     <div class="flex-1">
                         <label class="block text-xs font-medium text-gray-400 mb-1">集数</label>
-                        <input type="number" id="ep-number-${episodeCounter}" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Ep." value="${initialNum}">
+                        <input type="number" id="ep-number-${uniqueId}" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-sm" placeholder="Ep." value="${data.number||''}">
                         <button class="text-red-400 text-xs mt-2 hover:underline" onclick="removeEpisode(this)">删除</button>
-                    </div>
-                `;
+                    </div>`;
                 episodesContainer.appendChild(entry);
             }
-            window.removeEpisode = function(btn) { btn.closest('.episode-entry').remove(); saveState(); };
             document.getElementById('add-episode-btn').addEventListener('click', () => { addEpisode(); saveState(); });
-            document.querySelectorAll('.close-modal-btn').forEach(btn => {
-                btn.addEventListener('click', () => { smartModal.classList.add('hidden'); summaryModal.classList.add('hidden'); });
+
+            // --- Common Event Listeners ---
+            document.querySelectorAll('.close-modal-btn').forEach(b => b.addEventListener('click', () => smartModal.classList.add('hidden')));
+            document.getElementById('close-result-modal').addEventListener('click', () => summaryModal.classList.add('hidden'));
+            document.body.addEventListener('click', (e) => {
+                const trigger = e.target.closest('.manual-trigger');
+                if (trigger) {
+                    currentTargetId = trigger.dataset.targetId;
+                    currentApiType = trigger.dataset.apiType || 'subject';
+                    document.getElementById('api-id-input').value = '';
+                    document.getElementById('api-preview').classList.add('hidden');
+                    document.getElementById('tab-id').classList.remove('hidden');
+                    document.getElementById('tab-manual').classList.add('hidden');
+                    smartModal.classList.remove('hidden');
+                }
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.toggle('text-indigo-400', b === btn);
+                        b.classList.toggle('border-indigo-500', b === btn);
+                        b.classList.toggle('text-gray-400', b !== btn);
+                    });
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('hidden', c.id !== `tab-${btn.dataset.tab}`));
+                });
+            });
+            document.getElementById('fetch-api-btn').addEventListener('click', async () => {
+                const id = document.getElementById('api-id-input').value;
+                if(!id) return;
+                const endpoint = currentApiType === 'subject' ? `https://api.bgm.tv/v0/subjects/${id}` : `https://api.bgm.tv/v0/${currentApiType}s/${id}`;
+                try {
+                    const res = await fetch(endpoint);
+                    if (!res.ok) throw new Error("ID Error");
+                    const d = await res.json();
+                    const name = d.name_cn || d.name;
+                    const img = (d.images?.large || d.images?.medium || '').replace('http:','https:');
+                    tempApiData = {name, img};
+                    document.getElementById('api-preview-title').textContent = name;
+                    document.getElementById('api-preview-img').src = `https://images.weserv.nl/?url=${encodeURIComponent(img)}&output=webp`;
+                    document.getElementById('api-preview').classList.remove('hidden');
+                } catch(e){ alert("ID Error"); }
+            });
+            document.getElementById('confirm-api-btn').addEventListener('click', () => {
+                if(tempApiData) { updateImageDisplay(currentTargetId, tempApiData.img); document.getElementById(`data-name-${currentTargetId}`).value = tempApiData.name; document.getElementById(`data-img-${currentTargetId}`).value = tempApiData.img; saveState(); smartModal.classList.add('hidden'); }
+            });
+            document.getElementById('manual-confirm-btn').addEventListener('click', () => {
+                const name = document.getElementById('manual-name').value;
+                const img = document.getElementById('manual-image-url').value;
+                if(name && img) { updateImageDisplay(currentTargetId, img); document.getElementById(`data-name-${currentTargetId}`).value = name; document.getElementById(`data-img-${currentTargetId}`).value = img; saveState(); smartModal.classList.add('hidden'); }
             });
 
-            // --- Generate Image Direct Logic ---
-            const generateBtn = document.getElementById('generate-summary');
-            
-            generateBtn.addEventListener('click', async () => {
-                // 1. Prepare Data
-                const year = document.getElementById('year').value || '2025';
-                const currentYearWatched = parseInt(watchingCountInput.value, 10) || 0;
-                const totalWatchedThisYear = parseInt(watchedCountInput.value, 10) || 0;
-                const rewatched = parseInt(rewatchedCountInput.value, 10) || 0;
-                const total = parseInt(totalWatchedInput.value, 10) || 0;
-                const username = usernameInput.value || 'Anonymous';
-                const avatar = avatarPreview.src;
-                const nickname = nicknameDisplay.value || username;
-
-                const data = { 
-                    year, watching: currentYearWatched, watched: totalWatchedThisYear, rewatched, total, username, nickname, avatar, items: {}, episodes: []
-                };
-
-                Object.keys(itemConfig).forEach(id => { 
-                    data.items[id] = { 
-                        label: itemConfig[id].label, 
-                        name: document.getElementById(`data-name-${id}`).value, 
-                        img: document.getElementById(`data-img-${id}`).value 
-                    }; 
-                });
-                document.querySelectorAll('.episode-entry').forEach((entry) => {
-                    const idPart = entry.id.split('-')[1]; 
-                    const animeId = `ep-anime-${idPart}`;
-                    const numInput = document.getElementById(`ep-number-${idPart}`);
-                    if (numInput && document.getElementById(`data-name-${animeId}`)) {
-                         data.episodes.push({
-                            name: document.getElementById(`data-name-${animeId}`).value,
-                            img: document.getElementById(`data-img-${animeId}`).value,
-                            number: numInput.value
-                        });
-                    }
-                });
-
-                // 2. Render HTML to Container
-                renderSummary(data);
-                
-                // 3. Show Modal with Loader
-                summaryModal.classList.remove('hidden');
-                generationLoader.classList.remove('hidden');
-                
-                // 4. Wait for images to load (short delay usually enough with weserv)
-                // Using a small timeout to allow DOM layout to settle before capture
-                setTimeout(async () => {
-                    const element = document.querySelector('#summary-content > div');
-                    if(!element) return;
-
-                    try {
-                        const canvas = await html2canvas(element, { 
-                            useCORS: true, 
-                            backgroundColor: null, 
-                            scale: 2 // High resolution
-                        });
-                        
-                        // 5. Replace HTML with Image
-                        const img = new Image();
-                        img.src = canvas.toDataURL('image/png');
-                        img.className = "w-full h-auto rounded-lg shadow-2xl";
-                        img.alt = "Bangumi Summary Image";
-                        
-                        const contentContainer = document.getElementById('summary-content');
-                        contentContainer.innerHTML = ''; // Clear HTML
-                        contentContainer.appendChild(img);
-                        
-                        generationLoader.classList.add('hidden'); // Hide loader
-                        
-                    } catch (err) {
-                        console.error(err);
-                        alert("图片生成失败，请检查网络或图片源跨域设置。\n依然显示 HTML 预览供截图。");
-                        generationLoader.classList.add('hidden');
-                    }
-                }, 1000); // 1s delay for images
-            });
-
-            function renderSummary(data) {
-                const placeholder = 'https://placehold.co/225x318/1f2937/374151?text=Empty';
-                
-                // Weserv Proxy for CORS
-                const toCorsUrl = (url) => {
-                    if (!url || url.startsWith('data:') || url.includes('placehold.co')) return url;
-                    return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp`;
-                };
-
-                // Updated Layout: Auto height for titles, more padding
-                const getItemHTML = (id) => { 
-                    const item = data.items[id]; 
-                    if (!item) return ''; 
-                    const img = item.img || placeholder; 
-                    const name = item.name || '-'; 
-                    return `
-                    <div class="text-center group">
-                        <p class="text-[10px] text-indigo-300 mb-1 uppercase tracking-wider">${item.label}</p>
-                        <div class="overflow-hidden rounded-lg shadow-lg aspect-[3/4] mb-2 relative">
-                            <img src="${toCorsUrl(img)}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" alt="${name}" crossorigin="anonymous">
-                        </div>
-                        <div class="min-h-[2rem] flex items-start justify-center pt-1">
-                            <p class="text-xs font-bold text-gray-200 title-text leading-tight">${name}</p>
-                        </div>
-                    </div>`; 
-                };
-
-                const getCpHTML = () => {
-                    const i1 = data.items['cp-1'], i2 = data.items['cp-2'];
-                    const img1 = i1.img || placeholder, n1 = i1.name || '';
-                    const img2 = i2.img || placeholder, n2 = i2.name || '';
-                    return `
-                    <div class="col-span-2 md:col-span-1 text-center">
-                         <p class="text-[10px] text-pink-300 mb-1 uppercase tracking-wider">最佳 CP</p>
-                         <div class="flex justify-center items-end h-32 md:h-40 relative">
-                             <img src="${toCorsUrl(img1)}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl z-10 transform -rotate-6 border-2 border-gray-800" alt="${n1}" crossorigin="anonymous">
-                             <img src="${toCorsUrl(img2)}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl transform rotate-6 ml-[-15px] border-2 border-gray-800" alt="${n2}" crossorigin="anonymous">
-                         </div>
-                         <div class="min-h-[2rem] flex items-start justify-center pt-2">
-                            <p class="text-xs font-bold text-pink-100 title-text leading-tight">${n1} & ${n2}</p>
-                         </div>
-                    </div>`;
-                };
-
-                const getEpHTML = (ep) => `
-                    <div class="text-center">
-                        <div class="overflow-hidden rounded-md shadow aspect-video mb-1">
-                            <img src="${toCorsUrl(ep.img || placeholder)}" class="w-full h-full object-cover" crossorigin="anonymous">
-                        </div>
-                        <div class="min-h-[1.5rem] flex items-start justify-center pt-1">
-                            <p class="text-[10px] font-bold text-gray-300 title-text leading-tight">${ep.name}</p>
-                        </div>
-                        <p class="text-[10px] text-indigo-400">Ep.${ep.number}</p>
-                    </div>`;
-
-                const episodesSection = data.episodes.length > 0 ? `
-                    <div class="mt-6 pt-4 border-t border-gray-700/50">
-                        <h3 class="text-sm font-bold text-gray-400 mb-3 text-center">年度单集</h3>
-                        <div class="grid grid-cols-4 md:grid-cols-6 gap-3">
-                            ${data.episodes.map(getEpHTML).join('')}
-                        </div>
-                    </div>` : '';
-
-                document.getElementById('summary-content').innerHTML = `
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-xl shadow-2xl relative overflow-hidden w-full max-w-[700px] mx-auto">
-                        <!-- Header -->
-                        <div class="flex items-center space-x-4 mb-8 relative z-10">
-                            <img src="${toCorsUrl(data.avatar)}" class="w-16 h-16 rounded-full border-4 border-indigo-500 shadow-lg" crossorigin="anonymous">
-                            <div>
-                                <h2 class="text-3xl font-black italic tracking-tighter">${data.year}</h2>
-                                <p class="text-sm text-indigo-300 font-medium tracking-wide">ANIMATION YEAR IN REVIEW</p>
-                                <p class="text-xs text-gray-500 mt-0.5">@${data.nickname}</p>
-                            </div>
-                            <div class="ml-auto flex space-x-6 text-right">
-                                <div><p class="text-2xl font-bold text-white">${data.watching}</p><p class="text-[10px] text-gray-400 uppercase">追番(${data.year}完结)</p></div>
-                                <div><p class="text-2xl font-bold text-white">${data.watched}</p><p class="text-[10px] text-gray-400 uppercase">看番(${data.year}完成)</p></div>
-                                <div><p class="text-2xl font-bold text-indigo-400">${data.total}</p><p class="text-[10px] text-gray-400 uppercase">累计</p></div>
-                            </div>
-                        </div>
-
-                        <!-- Grid: Anime | Characters | Music -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-                            <!-- Col 1: Anime (4 items) -->
-                            <div class="space-y-4">
-                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Top Anime</h3>
-                                <div class="grid grid-cols-2 gap-3">
-                                    ${getItemHTML('rank-air-1')}${getItemHTML('rank-end-1')}
-                                    ${getItemHTML('rank-end-2')}${getItemHTML('rank-end-3')}
-                                </div>
-                            </div>
-                            
-                            <!-- Col 2: Characters & CP (3 items + CP) -->
-                            <div class="space-y-4">
-                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Characters</h3>
-                                <div class="grid grid-cols-2 gap-3">
-                                    ${getItemHTML('char-female')}${getItemHTML('char-male')}
-                                    ${getItemHTML('char-other')}
-                                </div>
-                                ${getCpHTML()}
-                            </div>
-
-                            <!-- Col 3: Music (4 items) -->
-                            <div class="space-y-4">
-                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Music</h3>
-                                <div class="grid grid-cols-2 gap-3">
-                                    ${getItemHTML('music-op')}${getItemHTML('music-ed')}
-                                    ${getItemHTML('music-in')}${getItemHTML('music-artist')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 2: Voice Actors (Separate Row) -->
-                        <div class="mt-6 relative z-10">
-                            <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1 mb-4 text-center">Voice Actors</h3>
-                            <div class="flex justify-center gap-6">
-                                <div class="w-1/3 md:w-1/4">${getItemHTML('staff-seiyuu-female')}</div>
-                                <div class="w-1/3 md:w-1/4">${getItemHTML('staff-seiyuu-male')}</div>
-                            </div>
-                        </div>
-
-                        ${episodesSection}
-
-                        <!-- Footer Decoration -->
-                        <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-                        <div class="absolute -top-10 -left-10 w-64 h-64 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-                    </div>
-                `;
-            }
+            loadState();
         });
     </script>
 </body>
