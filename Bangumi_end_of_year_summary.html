@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bangumi 年度小结生成器</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 html2canvas 用于生成图片 -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -34,7 +33,6 @@
         </header>
 
         <main class="space-y-8">
-            <!-- Section 1: Basic Info -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">基本数据</h2>
@@ -83,7 +81,6 @@
                 <p class="text-xs text-green-500 mt-1 hidden" id="save-indicator">已自动保存草稿</p>
             </section>
 
-            <!-- Rankings -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度排名</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -94,7 +91,6 @@
                 </div>
             </section>
 
-            <!-- Characters -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度角色</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -111,7 +107,6 @@
                 </div>
             </section>
             
-            <!-- Voice Actors -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度声优</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -120,18 +115,44 @@
                 </div>
             </section>
 
-            <!-- Music -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div id="music-op" class="manual-container"></div>
-                    <div id="music-ed" class="manual-container"></div>
-                    <div id="music-in" class="manual-container"></div>
-                    <div id="music-artist" class="manual-container"></div>
+                
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Opening (Top 3)</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div id="music-op-1" class="manual-container"></div>
+                        <div id="music-op-2" class="manual-container"></div>
+                        <div id="music-op-3" class="manual-container"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Ending (Top 3)</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div id="music-ed-1" class="manual-container"></div>
+                        <div id="music-ed-2" class="manual-container"></div>
+                        <div id="music-ed-3" class="manual-container"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Insert (Top 3)</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div id="music-in-1" class="manual-container"></div>
+                        <div id="music-in-2" class="manual-container"></div>
+                        <div id="music-in-3" class="manual-container"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">年度歌手</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div id="music-artist" class="manual-container"></div>
+                    </div>
                 </div>
             </section>
 
-            <!-- Episodes -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">年度单集</h2>
@@ -148,7 +169,6 @@
         </main>
     </div>
 
-    <!-- Modals (Smart Input) -->
     <div id="smart-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
         <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all scale-100">
             <div class="p-5 border-b border-gray-700 flex justify-between items-center bg-gray-800 rounded-t-xl">
@@ -167,7 +187,6 @@
                     </div>
                     <div id="api-preview" class="hidden mt-4 p-3 bg-gray-700/50 rounded-lg flex gap-3 items-center border border-gray-600">
                         <div class="w-12 h-16 flex items-center justify-center overflow-hidden bg-gray-900">
-                            <!-- Preview uses flex + max-size for NO CROP -->
                             <img id="api-preview-img" class="max-w-full max-h-full" style="width:auto;height:auto;">
                         </div>
                         <div class="flex-1 min-w-0"><p id="api-preview-title" class="font-bold text-white truncate"></p></div>
@@ -184,7 +203,6 @@
         </div>
     </div>
 
-    <!-- Result Modal -->
     <div id="summary-modal" class="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
          <div class="relative w-full max-w-4xl h-full flex flex-col items-center justify-center">
             <button id="close-result-modal" class="absolute top-4 right-4 bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-gray-600 z-[60] shadow-lg cursor-pointer">&times;</button>
@@ -202,7 +220,6 @@
         </div>
     </div>
 
-    <!-- Hidden Rendering Stage -->
     <div id="render-stage" class="absolute top-0 left-[-9999px] z-[-1] w-[900px] bg-gray-900 text-white"></div>
 
     <script>
@@ -221,6 +238,7 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            // UPDATED ITEM CONFIG FOR 3 MUSIC ITEMS
             const itemConfig = {
                 'rank-air-1': { label: '年度排名1 (播出)', type: 'subject' }, 
                 'rank-end-1': { label: '年度排名1 (完结)', type: 'subject' },
@@ -231,9 +249,18 @@
                 'char-other': { label: '其他角色', type: 'character' }, 
                 'cp-1': { label: 'CP 1', type: 'character' }, 
                 'cp-2': { label: 'CP 2', type: 'character' },
-                'music-op': { label: 'OP', type: 'subject' }, 
-                'music-ed': { label: 'ED', type: 'subject' }, 
-                'music-in': { label: 'IN', type: 'subject' },
+                
+                // Music Expanded
+                'music-op-1': { label: 'OP 1', type: 'subject' },
+                'music-op-2': { label: 'OP 2', type: 'subject' },
+                'music-op-3': { label: 'OP 3', type: 'subject' },
+                'music-ed-1': { label: 'ED 1', type: 'subject' },
+                'music-ed-2': { label: 'ED 2', type: 'subject' },
+                'music-ed-3': { label: 'ED 3', type: 'subject' },
+                'music-in-1': { label: 'IN 1', type: 'subject' },
+                'music-in-2': { label: 'IN 2', type: 'subject' },
+                'music-in-3': { label: 'IN 3', type: 'subject' },
+                
                 'music-artist': { label: '歌手', type: 'person' }, 
                 'staff-seiyuu-female': { label: '女性声优', type: 'person' },
                 'staff-seiyuu-male': { label: '男性声优', type: 'person' },
@@ -249,11 +276,9 @@
                     ${showLabel ? `<label class="block text-sm font-medium text-gray-400 mb-1">${config.label}</label>` : ''}
                     <div class="relative manual-trigger group" data-target-id="${id}" data-api-type="${config.type}">
                         <div class="w-full h-40 bg-transparent rounded-md overflow-hidden border border-gray-700 flex items-center justify-center relative">
-                            <!-- Image Container: Hidden by default -->
                             <div id="img-container-${id}" class="w-full h-full hidden flex items-center justify-center">
                                 <img id="img-${id}" class="save-target-img max-w-full max-h-full" style="width: auto; height: auto;">
                             </div>
-                            <!-- Placeholder -->
                             <div id="placeholder-${id}" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 group-hover:text-indigo-400 transition-colors bg-gray-800/30">
                                  <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                  <span class="text-xs">点击添加</span>
@@ -441,9 +466,11 @@
                     episodes: []
                 };
                 Object.keys(itemConfig).forEach(id => {
+                    const nameEl = document.getElementById(`data-name-${id}`);
+                    const imgEl = document.getElementById(`data-img-${id}`);
                     data.items[id] = {
-                        name: document.getElementById(`data-name-${id}`).value,
-                        img: document.getElementById(`data-img-${id}`).value
+                        name: nameEl ? nameEl.value : '',
+                        img: imgEl ? imgEl.value : ''
                     };
                 });
                 document.querySelectorAll('.episode-entry').forEach(entry => {
@@ -589,7 +616,24 @@
 
                     <div class="mb-8">
                         <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-green-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度音乐</h2></div>
-                        <div class="grid grid-cols-4 gap-4">${cardItem('music-op')}${cardItem('music-ed')}${cardItem('music-in')}${cardItem('music-artist')}</div>
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-400 mb-2">OP</h3>
+                                <div class="grid grid-cols-3 gap-4">${cardItem('music-op-1')}${cardItem('music-op-2')}${cardItem('music-op-3')}</div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-400 mb-2">ED</h3>
+                                <div class="grid grid-cols-3 gap-4">${cardItem('music-ed-1')}${cardItem('music-ed-2')}${cardItem('music-ed-3')}</div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-400 mb-2">IN</h3>
+                                <div class="grid grid-cols-3 gap-4">${cardItem('music-in-1')}${cardItem('music-in-2')}${cardItem('music-in-3')}</div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-400 mb-2">歌手</h3>
+                                <div class="grid grid-cols-4 gap-4">${cardItem('music-artist')}</div>
+                            </div>
+                        </div>
                     </div>
 
                     ${data.episodes.length > 0 ? `<div><div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-blue-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度单集</h2></div><div class="grid grid-cols-5 gap-4">${data.episodes.map(epItem).join('')}</div></div>` : ''}
