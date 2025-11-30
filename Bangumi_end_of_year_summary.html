@@ -795,7 +795,7 @@
                     const res = await fetch(endpoint);
                     if (!res.ok) throw new Error("ID Error");
                     const d = await res.json();
-                    const name = d.name_cn || d.name;
+                    const name = d.name;
                     const img = (d.images?.large || d.images?.medium || '').replace('http:', 'https:');
                     tempApiData = { name, img };
                     document.getElementById('api-preview-title').textContent = name;
