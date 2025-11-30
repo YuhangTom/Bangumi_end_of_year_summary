@@ -518,19 +518,22 @@
 
                 const cpCard = () => {
                     const i1 = data.items['cp-1'], i2 = data.items['cp-2'];
+                    const n1 = i1?.name || '';
+                    const n2 = i2?.name || '';
+                    const cpName = (n1 && n2) ? `${n1} x ${n2}` : 'CP';
+                    
                     return `
                     <div class="col-span-1 bg-gray-800 rounded-lg p-3 border border-gray-700 flex flex-col items-center justify-between h-full">
-                        <div class="flex justify-center items-end h-40 w-full px-2">
-                            <!-- Removed bg-black -->
-                            <div class="w-1/2 h-full rounded -mr-2 z-10 overflow-hidden flex items-center justify-center bg-transparent">
+                        <div class="flex justify-center items-end h-52 w-full px-0 gap-1">
+                            <div class="w-1/2 h-full rounded overflow-hidden flex items-center justify-center bg-transparent">
                                 <img src="${toCors(i1?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
                             </div>
-                            <div class="w-1/2 h-full rounded -ml-2 overflow-hidden flex items-center justify-center bg-transparent">
+                            <div class="w-1/2 h-full rounded overflow-hidden flex items-center justify-center bg-transparent">
                                 <img src="${toCors(i2?.img)}" class="max-w-full max-h-full" style="width: auto; height: auto;" crossorigin="anonymous">
                             </div>
                         </div>
                         <div class="min-h-[2.5rem] flex items-center justify-center w-full">
-                            <p class="text-sm font-bold text-center text-pink-400 w-full title-text">CP</p>
+                            <p class="text-sm font-bold text-center text-pink-400 w-full title-text">${cpName}</p>
                         </div>
                     </div>`;
                 };
