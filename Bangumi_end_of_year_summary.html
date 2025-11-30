@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bangumi 年度小结生成器</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 html2canvas 用于生成图片 -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -35,6 +37,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* 移除 truncate，允许换行 */
+        .title-text {
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 min-h-screen">
@@ -42,7 +50,7 @@
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white">Bangumi 年度小结生成器</h1>
-            <p class="text-gray-400 mt-2">ID 精准填充 · 全历史年份支持</p>
+            <p class="text-gray-400 mt-2">ID 精准填充 · 全历史年份支持 · 自动保存</p>
         </header>
 
         <main class="space-y-8">
@@ -51,7 +59,7 @@
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">基本数据</h2>
                     <div class="flex items-center space-x-2">
-                        <input type="text" id="bangumi-username" class="bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="输入用户名">
+                        <input type="text" id="bangumi-username" class="save-target bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="输入用户名">
                         <button id="sync-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center transition">
                             <span class="btn-text">同步数据</span>
                             <div class="loader ml-2 hidden"></div>
@@ -65,21 +73,22 @@
                             <img id="user-avatar-preview" src="https://placehold.co/100x100/1f2937/6b7280?text=User" class="w-10 h-10 rounded-full border-2 border-gray-600 object-cover">
                             <div>
                                 <label class="block text-xs text-gray-400">昵称</label>
-                                <input type="text" id="user-nickname" class="bg-transparent border-none p-0 text-sm font-semibold text-white w-full focus:ring-0" placeholder="等待同步..." readonly>
+                                <input type="text" id="user-nickname" class="save-target bg-transparent border-none p-0 text-sm font-semibold text-white w-full focus:ring-0" placeholder="等待同步..." readonly>
+                                <input type="hidden" id="user-avatar-url" class="save-target">
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="year" class="block text-xs font-medium text-gray-400 mb-1">年份</label>
-                        <input type="number" id="year" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
+                        <input type="number" id="year" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
                     </div>
                     <div class="form-group">
                         <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数 (完结)</label>
-                        <input type="number" id="watching-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年播出且看完">
+                        <input type="number" id="watching-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年播出且看完">
                     </div>
                     <div class="form-group">
                         <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数 (阅历)</label>
-                        <input type="number" id="watched-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年看过的总数">
+                        <input type="number" id="watched-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年看过的总数">
                     </div>
                     <div class="form-group">
                         <label for="rewatched-count" class="block text-xs font-medium text-gray-400 mb-1">补番数 (自动)</label>
@@ -87,10 +96,11 @@
                     </div>
                     <div class="form-group">
                         <label for="total-watched" class="block text-xs font-medium text-gray-400 mb-1">累计看番数</label>
-                        <input type="number" id="total-watched" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="历史总计">
+                        <input type="number" id="total-watched" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="历史总计">
                     </div>
                 </div>
                 <p id="sync-status" class="text-xs text-gray-500 mt-2 italic h-4"></p>
+                <p class="text-xs text-green-500 mt-1 hidden" id="save-indicator">已自动保存草稿</p>
             </section>
 
             <!-- Section 2: Rankings -->
@@ -121,7 +131,7 @@
                 </div>
             </section>
             
-            <!-- Section 4: Music -->
+            <!-- Section 4: Music & Voice -->
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐与声优</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -147,7 +157,7 @@
             
             <div class="text-center pt-4 pb-8">
                  <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg ring-4 ring-indigo-500/30">
-                    生成年度小结
+                    预览年度小结
                 </button>
             </div>
         </main>
@@ -214,10 +224,17 @@
     <!-- Summary Modal -->
     <div id="summary-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
          <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col relative border border-gray-700">
-            <div class="absolute top-4 right-4 z-10">
+            <div class="absolute top-4 right-4 z-20 flex gap-2">
                  <button class="close-modal-btn bg-gray-700/80 text-gray-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center text-xl leading-none backdrop-blur-md transition hover:bg-gray-600">&times;</button>
             </div>
-            <div id="summary-content" class="p-8 overflow-y-auto custom-scrollbar"></div>
+            <!-- 加载中提示 -->
+            <div id="generation-loader" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-800/90 rounded-xl hidden">
+                <div class="loader mb-4" style="width: 40px; height: 40px; border-width: 4px;"></div>
+                <p class="text-white font-medium">正在生成图片...</p>
+                <p class="text-gray-400 text-sm mt-2">首次加载图片可能需要几秒钟</p>
+            </div>
+            <!-- 显示区域：初始显示HTML(隐藏)，生成后显示img -->
+            <div id="summary-content" class="p-8 overflow-y-auto custom-scrollbar flex justify-center"></div>
         </div>
     </div>
 
@@ -251,12 +268,12 @@
                 container.innerHTML = `
                     ${showLabel ? `<label class="block text-sm font-medium text-gray-400 mb-1">${config.label}</label>` : ''}
                     <div class="relative manual-trigger group" data-target-id="${id}" data-api-type="${config.type}">
-                        <img id="img-${id}" class="w-full h-40 object-cover rounded-md bg-gray-700 hidden shadow-md">
+                        <img id="img-${id}" class="save-target-img w-full h-40 object-cover rounded-md bg-gray-700 hidden shadow-md">
                         <div id="placeholder-${id}" class="w-full h-40 rounded-md bg-gray-700/50 border-2 border-dashed border-gray-600 flex flex-col items-center justify-center placeholder-image cursor-pointer group-hover:border-indigo-500 transition-colors">
                              <svg class="w-8 h-8 text-gray-500 mb-1 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                              <span class="text-gray-500 text-xs group-hover:text-indigo-300">点击添加</span>
                         </div>
-                        <input type="hidden" id="data-name-${id}"><input type="hidden" id="data-img-${id}">
+                        <input type="hidden" id="data-name-${id}" class="save-target"><input type="hidden" id="data-img-${id}" class="save-target">
                     </div>`;
             });
 
@@ -264,22 +281,22 @@
             const smartModal = document.getElementById('smart-modal');
             const summaryModal = document.getElementById('summary-modal');
             const episodesContainer = document.getElementById('episodes-container');
+            const generationLoader = document.getElementById('generation-loader');
             
-            // Basic Info Inputs
             const yearInput = document.getElementById('year');
-            const watchingCountInput = document.getElementById('watching-count'); // 追番
-            const watchedCountInput = document.getElementById('watched-count');   // 看番
-            const rewatchedCountInput = document.getElementById('rewatched-count'); // 补番
+            const watchingCountInput = document.getElementById('watching-count');
+            const watchedCountInput = document.getElementById('watched-count');
+            const rewatchedCountInput = document.getElementById('rewatched-count');
             const totalWatchedInput = document.getElementById('total-watched');
             const usernameInput = document.getElementById('bangumi-username');
             const nicknameDisplay = document.getElementById('user-nickname');
             const avatarPreview = document.getElementById('user-avatar-preview');
+            const avatarUrlHidden = document.getElementById('user-avatar-url');
             const syncStatus = document.getElementById('sync-status');
+            const saveIndicator = document.getElementById('save-indicator');
             
-            // Sync Button
             const syncBtn = document.getElementById('sync-user-btn');
             
-            // Modal Elements
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
             const apiIdInput = document.getElementById('api-id-input');
@@ -297,25 +314,82 @@
             let episodeCounter = 0;
             let tempApiData = null; 
 
-            // Helper: Fetch Collection with Filtering
-            // Returns object with multiple stats
-            async function fetchUserStats(username, targetYear) {
-                let finishedThisYear = 0; // Total Watched in targetYear
-                let newShowsFinished = 0; // Watched in targetYear AND Aired in targetYear
+            // --- Caching Logic (LocalStorage) ---
+            function saveState() {
+                const state = {
+                    inputs: {},
+                    episodes: []
+                };
+                document.querySelectorAll('.save-target').forEach(el => {
+                    state.inputs[el.id] = el.value;
+                });
+                document.querySelectorAll('.episode-entry').forEach((entry, index) => {
+                    const idPart = entry.id.split('-')[1];
+                    const animeId = `ep-anime-${idPart}`;
+                    state.episodes.push({
+                        name: document.getElementById(`data-name-${animeId}`)?.value || '',
+                        img: document.getElementById(`data-img-${animeId}`)?.value || '',
+                        number: document.getElementById(`ep-number-${idPart}`)?.value || ''
+                    });
+                });
+                localStorage.setItem('bgm_summary_state', JSON.stringify(state));
+                saveIndicator.classList.remove('hidden');
+                setTimeout(() => saveIndicator.classList.add('hidden'), 2000);
+            }
 
+            function loadState() {
+                const saved = localStorage.getItem('bgm_summary_state');
+                if (!saved) return;
+                try {
+                    const state = JSON.parse(saved);
+                    for (const [id, value] of Object.entries(state.inputs)) {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.value = value;
+                            if (id.startsWith('data-img-') && value) {
+                                const containerId = id.replace('data-img-', '');
+                                const imgEl = document.getElementById(`img-${containerId}`);
+                                const placeEl = document.getElementById(`placeholder-${containerId}`);
+                                if (imgEl && placeEl) {
+                                    imgEl.src = value;
+                                    imgEl.classList.remove('hidden');
+                                    placeEl.classList.add('hidden');
+                                }
+                            }
+                        }
+                    }
+                    if (state.inputs['user-avatar-url']) {
+                        avatarPreview.src = state.inputs['user-avatar-url'];
+                    }
+                    episodesContainer.innerHTML = '';
+                    state.episodes.forEach(ep => addEpisode(ep));
+                    calculateRewatched();
+                } catch (e) { console.error("Failed to load state", e); }
+            }
+
+            document.body.addEventListener('input', (e) => {
+                if (e.target.matches('input') || e.target.matches('.save-target')) { saveState(); }
+            });
+            const originalApply = applyItemData;
+            applyItemData = function(name, imageUrl) {
+                originalApply(name, imageUrl); 
+                saveState();
+            };
+            loadState();
+
+            // --- Sync Logic ---
+            async function fetchUserStats(username, targetYear) {
+                let finishedThisYear = 0; 
+                let newShowsFinished = 0; 
                 const limit = 50; 
                 let page = 0;
                 let hasMore = true;
-                // Increase scan limit significantly (approx 5000 items) to cover older years
                 const maxPages = 100; 
                 const targetYearInt = parseInt(targetYear, 10);
 
-                // Scan "Watched" (Type 2)
                 while (hasMore && page < maxPages) {
                     try {
-                        // Update status for user feedback
                         if (syncStatus) syncStatus.textContent = `正在扫描第 ${page + 1} 页历史数据...`;
-
                         const offset = page * limit;
                         const res = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=${limit}&offset=${offset}`);
                         if (!res.ok) break;
@@ -324,95 +398,57 @@
                         if (data.data.length === 0) { hasMore = false; break; }
 
                         for (const item of data.data) {
-                            // updated_at string format: "2025-01-01T..."
                             const updated = item.updated_at || ""; 
                             const itemYearStr = updated.substring(0, 4);
                             const itemYearInt = parseInt(itemYearStr, 10);
-
-                            // Logic: 
-                            // 1. If item updated in FUTURE relative to target (unlikely if target is current year, but possible if looking at old year), ignore.
-                            // 2. If item updated IN target year, count it.
-                            // 3. If item updated BEFORE target year (e.g. found 2022 when looking for 2023), stop scanning.
-                            // NOTE: API is usually sorted by updated_at desc. 
                             
-                            if (itemYearInt > targetYearInt) {
-                                // Too new, keep searching deeper
-                                continue; 
-                            } else if (itemYearInt === targetYearInt) {
-                                // Match!
+                            if (itemYearInt > targetYearInt) { continue; } 
+                            else if (itemYearInt === targetYearInt) {
                                 finishedThisYear++;
-                                
-                                // Check air date for "New Show" status
                                 const airDate = item.subject?.date || "";
-                                if (airDate.startsWith(targetYear)) {
-                                    newShowsFinished++;
-                                }
-                            } else if (itemYearInt < targetYearInt) {
-                                // Found data OLDER than target year.
-                                // Since data is sorted desc, everything after this is also too old.
-                                // We can safely stop.
-                                hasMore = false;
-                                break; 
-                            }
+                                if (airDate.startsWith(targetYear)) { newShowsFinished++; }
+                            } else if (itemYearInt < targetYearInt) { hasMore = false; break; }
                         }
-
                         if (data.data.length < limit) hasMore = false;
                         page++;
-                    } catch (e) {
-                        console.error("Error scanning watched", e);
-                        break;
-                    }
+                    } catch (e) { console.error(e); break; }
                 }
-
                 return { finishedThisYear, newShowsFinished };
             }
 
-            // --- Logic: User Sync ---
             syncBtn.addEventListener('click', async () => {
                 const username = usernameInput.value.trim();
                 const targetYear = yearInput.value.toString();
-
                 if (!username) { alert("请输入 Bangumi 用户名"); return; }
                 
                 const btnText = syncBtn.querySelector('.btn-text');
                 const loader = syncBtn.querySelector('.loader');
-                
                 btnText.textContent = "同步中...";
                 syncStatus.textContent = "正在连接 Bangumi...";
                 loader.classList.remove('hidden');
                 syncBtn.disabled = true;
 
                 try {
-                    // 1. Profile
                     const userRes = await fetch(`https://api.bgm.tv/v0/users/${username}`);
                     if (!userRes.ok) throw new Error("用户未找到");
                     const userData = await userRes.json();
                     
                     nicknameDisplay.value = userData.nickname;
                     avatarPreview.src = userData.avatar.large;
+                    avatarUrlHidden.value = userData.avatar.large; 
 
-                    // 2. Total Cumulative
                     const totalRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
                     const totalData = await totalRes.json();
-                    if (totalData.total !== undefined) {
-                        totalWatchedInput.value = totalData.total;
-                    }
+                    if (totalData.total !== undefined) { totalWatchedInput.value = totalData.total; }
 
-                    // 3. Smart Stats
                     syncStatus.textContent = `正在分析 ${targetYear} 年数据...`;
                     const stats = await fetchUserStats(username, targetYear);
-                    
-                    // Logic Mapping:
-                    // 看番数 (今年完成) = stats.finishedThisYear
                     watchedCountInput.value = stats.finishedThisYear;
-
-                    // 追番数 (今年完结新番) = New Shows Finished only
                     watchingCountInput.value = stats.newShowsFinished;
                     
-                    // Recalc Rewatched
                     calculateRewatched();
+                    saveState(); 
                     syncStatus.textContent = "同步完成！";
-
                 } catch (error) {
                     syncStatus.textContent = "同步出错";
                     alert("同步失败: " + error.message);
@@ -424,48 +460,33 @@
                 }
             });
 
-            // --- Logic: Calculations ---
             function calculateRewatched() {
-                // Logic: 
-                // Watched = All Finished This Year
-                // Watching = New Shows Finished This Year
-                // Rewatched = Watched - Watching
-                
                 const watched = parseInt(watchedCountInput.value, 10) || 0;
                 const watching = parseInt(watchingCountInput.value, 10) || 0;
-                
                 const diff = watched - watching;
                 rewatchedCountInput.value = diff >= 0 ? diff : 0;
             }
             watchingCountInput.addEventListener('input', calculateRewatched);
             watchedCountInput.addEventListener('input', calculateRewatched);
 
-
-            // --- Logic: Modal & Item Selection ---
-            
-            // Open Modal
+            // --- Item Selection ---
             document.body.addEventListener('click', (e) => {
                 const trigger = e.target.closest('.manual-trigger');
                 if (trigger) {
                     currentTargetId = trigger.dataset.targetId;
                     currentApiType = trigger.dataset.apiType || 'subject'; 
-                    
                     apiIdInput.value = '';
                     apiPreview.classList.add('hidden');
                     apiError.classList.add('hidden');
                     document.getElementById('manual-name').value = document.getElementById(`data-name-${currentTargetId}`).value;
                     document.getElementById('manual-image-url').value = document.getElementById(`data-img-${currentTargetId}`).value;
-                    
                     switchTab('id');
                     smartModal.classList.remove('hidden');
                 }
             });
 
-            // Tab Switching
             tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    switchTab(btn.dataset.tab);
-                });
+                btn.addEventListener('click', () => { switchTab(btn.dataset.tab); });
             });
 
             function switchTab(tabName) {
@@ -482,36 +503,27 @@
                 document.getElementById(`tab-${tabName}`).classList.remove('hidden');
             }
 
-            // API Fetch by ID
             fetchApiBtn.addEventListener('click', async () => {
                 const id = apiIdInput.value.trim();
                 if (!id) return;
-                
                 apiLoader.classList.remove('hidden');
                 apiError.classList.add('hidden');
                 apiPreview.classList.add('hidden');
                 tempApiData = null;
-
                 try {
                     let endpoint = `https://api.bgm.tv/v0/subjects/${id}`;
                     if (currentApiType === 'character') endpoint = `https://api.bgm.tv/v0/characters/${id}`;
                     if (currentApiType === 'person') endpoint = `https://api.bgm.tv/v0/persons/${id}`;
-
                     const res = await fetch(endpoint, { headers: { 'User-Agent': 'BangumiYearReview/1.0' } });
                     if (!res.ok) throw new Error("ID 未找到或网络错误");
-                    
                     const data = await res.json();
-                    
                     const name = data.name_cn || data.name;
                     const img = data.images?.large || data.images?.medium || 'https://placehold.co/225x318/1f2937/374151?text=No+Img';
                     const finalImg = img.startsWith('//') ? `https:${img}` : img;
-
                     tempApiData = { name, img: finalImg };
-                    
                     apiPreviewImg.src = finalImg;
                     apiPreviewTitle.textContent = name;
                     apiPreview.classList.remove('hidden');
-
                 } catch (err) {
                     apiError.textContent = err.message;
                     apiError.classList.remove('hidden');
@@ -540,79 +552,75 @@
                 }
             });
 
-            function applyItemData(name, imageUrl) {
+            var applyItemData = function(name, imageUrl) {
                 if (!currentTargetId) return;
                 const img = document.getElementById(`img-${currentTargetId}`);
                 const placeholder = document.getElementById(`placeholder-${currentTargetId}`);
                 const nameInput = document.getElementById(`data-name-${currentTargetId}`);
                 const imgInput = document.getElementById(`data-img-${currentTargetId}`);
-                
                 img.src = imageUrl;
                 img.classList.remove('hidden');
                 placeholder.classList.add('hidden');
                 nameInput.value = name;
                 imgInput.value = imageUrl;
+                smartModal.classList.add('hidden');
             }
 
-            // --- Logic: Episodes ---
-            document.getElementById('add-episode-btn').addEventListener('click', () => {
+            // --- Episodes Logic ---
+            function addEpisode(data = {}) {
                 episodeCounter++;
                 const animeId = `ep-anime-${episodeCounter}`;
                 const entry = document.createElement('div');
                 entry.className = 'episode-entry flex items-end space-x-4 p-3 bg-gray-700/50 rounded-lg border border-gray-600 mb-4';
                 entry.id = `episode-${episodeCounter}`;
-                
+                const initialImg = data.img || '';
+                const initialName = data.name || '';
+                const initialNum = data.number || '';
+                const imgDisplayClass = initialImg ? '' : 'hidden';
+                const placeDisplayClass = initialImg ? 'hidden' : '';
+
                 entry.innerHTML = `
                     <div class="w-1/3 manual-container">
                         <label class="block text-xs font-medium text-gray-400 mb-1">动画</label>
                         <div class="relative manual-trigger group" data-target-id="${animeId}" data-api-type="subject">
-                            <img id="img-${animeId}" class="w-full h-24 object-cover rounded-md bg-gray-700 hidden">
-                            <div id="placeholder-${animeId}" class="w-full h-24 rounded-md bg-gray-700 flex flex-col items-center justify-center placeholder-image cursor-pointer border border-dashed border-gray-500 hover:border-indigo-500">
+                            <img id="img-${animeId}" src="${initialImg}" class="save-target-img w-full h-24 object-cover rounded-md bg-gray-700 ${imgDisplayClass}">
+                            <div id="placeholder-${animeId}" class="w-full h-24 rounded-md bg-gray-700 flex flex-col items-center justify-center placeholder-image cursor-pointer border border-dashed border-gray-500 hover:border-indigo-500 ${placeDisplayClass}">
                                  <span class="text-gray-500 text-xs">点击添加</span>
                             </div>
-                            <input type="hidden" id="data-name-${animeId}"><input type="hidden" id="data-img-${animeId}">
+                            <input type="hidden" id="data-name-${animeId}" class="save-target" value="${initialName}">
+                            <input type="hidden" id="data-img-${animeId}" class="save-target" value="${initialImg}">
                         </div>
                     </div>
                     <div class="flex-1">
                         <label class="block text-xs font-medium text-gray-400 mb-1">集数</label>
-                        <input type="number" id="ep-number-${episodeCounter}" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Ep.">
-                        <button class="text-red-400 text-xs mt-2 hover:underline" onclick="this.closest('.episode-entry').remove()">删除</button>
+                        <input type="number" id="ep-number-${episodeCounter}" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Ep." value="${initialNum}">
+                        <button class="text-red-400 text-xs mt-2 hover:underline" onclick="removeEpisode(this)">删除</button>
                     </div>
                 `;
                 episodesContainer.appendChild(entry);
-            });
-
+            }
+            window.removeEpisode = function(btn) { btn.closest('.episode-entry').remove(); saveState(); };
+            document.getElementById('add-episode-btn').addEventListener('click', () => { addEpisode(); saveState(); });
             document.querySelectorAll('.close-modal-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    smartModal.classList.add('hidden');
-                    summaryModal.classList.add('hidden');
-                });
+                btn.addEventListener('click', () => { smartModal.classList.add('hidden'); summaryModal.classList.add('hidden'); });
             });
 
-            // --- Logic: Generate Summary ---
+            // --- Generate Image Direct Logic ---
             const generateBtn = document.getElementById('generate-summary');
-            generateBtn.addEventListener('click', () => {
+            
+            generateBtn.addEventListener('click', async () => {
+                // 1. Prepare Data
                 const year = document.getElementById('year').value || '2025';
                 const currentYearWatched = parseInt(watchingCountInput.value, 10) || 0;
                 const totalWatchedThisYear = parseInt(watchedCountInput.value, 10) || 0;
                 const rewatched = parseInt(rewatchedCountInput.value, 10) || 0;
                 const total = parseInt(totalWatchedInput.value, 10) || 0;
-                
                 const username = usernameInput.value || 'Anonymous';
                 const avatar = avatarPreview.src;
                 const nickname = nicknameDisplay.value || username;
 
                 const data = { 
-                    year, 
-                    watching: currentYearWatched, 
-                    watched: totalWatchedThisYear, 
-                    rewatched,
-                    total,
-                    username,
-                    nickname,
-                    avatar,
-                    items: {},
-                    episodes: []
+                    year, watching: currentYearWatched, watched: totalWatchedThisYear, rewatched, total, username, nickname, avatar, items: {}, episodes: []
                 };
 
                 Object.keys(itemConfig).forEach(id => { 
@@ -622,12 +630,10 @@
                         img: document.getElementById(`data-img-${id}`).value 
                     }; 
                 });
-                
                 document.querySelectorAll('.episode-entry').forEach((entry) => {
                     const idPart = entry.id.split('-')[1]; 
                     const animeId = `ep-anime-${idPart}`;
                     const numInput = document.getElementById(`ep-number-${idPart}`);
-                    
                     if (numInput && document.getElementById(`data-name-${animeId}`)) {
                          data.episodes.push({
                             name: document.getElementById(`data-name-${animeId}`).value,
@@ -637,13 +643,56 @@
                     }
                 });
 
+                // 2. Render HTML to Container
                 renderSummary(data);
+                
+                // 3. Show Modal with Loader
                 summaryModal.classList.remove('hidden');
+                generationLoader.classList.remove('hidden');
+                
+                // 4. Wait for images to load (short delay usually enough with weserv)
+                // Using a small timeout to allow DOM layout to settle before capture
+                setTimeout(async () => {
+                    const element = document.querySelector('#summary-content > div');
+                    if(!element) return;
+
+                    try {
+                        const canvas = await html2canvas(element, { 
+                            useCORS: true, 
+                            backgroundColor: null, 
+                            scale: 2 // High resolution
+                        });
+                        
+                        // 5. Replace HTML with Image
+                        const img = new Image();
+                        img.src = canvas.toDataURL('image/png');
+                        img.className = "w-full h-auto rounded-lg shadow-2xl";
+                        img.alt = "Bangumi Summary Image";
+                        
+                        const contentContainer = document.getElementById('summary-content');
+                        contentContainer.innerHTML = ''; // Clear HTML
+                        contentContainer.appendChild(img);
+                        
+                        generationLoader.classList.add('hidden'); // Hide loader
+                        
+                    } catch (err) {
+                        console.error(err);
+                        alert("图片生成失败，请检查网络或图片源跨域设置。\n依然显示 HTML 预览供截图。");
+                        generationLoader.classList.add('hidden');
+                    }
+                }, 1000); // 1s delay for images
             });
 
             function renderSummary(data) {
                 const placeholder = 'https://placehold.co/225x318/1f2937/374151?text=Empty';
                 
+                // Weserv Proxy for CORS
+                const toCorsUrl = (url) => {
+                    if (!url || url.startsWith('data:') || url.includes('placehold.co')) return url;
+                    return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp`;
+                };
+
+                // Updated Layout: Auto height for titles, more padding
                 const getItemHTML = (id) => { 
                     const item = data.items[id]; 
                     if (!item) return ''; 
@@ -653,9 +702,11 @@
                     <div class="text-center group">
                         <p class="text-[10px] text-indigo-300 mb-1 uppercase tracking-wider">${item.label}</p>
                         <div class="overflow-hidden rounded-lg shadow-lg aspect-[3/4] mb-2 relative">
-                            <img src="${img}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" alt="${name}">
+                            <img src="${toCorsUrl(img)}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" alt="${name}" crossorigin="anonymous">
                         </div>
-                        <p class="text-xs font-bold truncate text-gray-200" title="${name}">${name}</p>
+                        <div class="min-h-[2rem] flex items-start justify-center pt-1">
+                            <p class="text-xs font-bold text-gray-200 title-text leading-tight">${name}</p>
+                        </div>
                     </div>`; 
                 };
 
@@ -667,19 +718,23 @@
                     <div class="col-span-2 md:col-span-1 text-center">
                          <p class="text-[10px] text-pink-300 mb-1 uppercase tracking-wider">最佳 CP</p>
                          <div class="flex justify-center items-end h-32 md:h-40 relative">
-                             <img src="${img1}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl z-10 transform -rotate-6 border-2 border-gray-800" alt="${n1}">
-                             <img src="${img2}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl transform rotate-6 ml-[-15px] border-2 border-gray-800" alt="${n2}">
+                             <img src="${toCorsUrl(img1)}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl z-10 transform -rotate-6 border-2 border-gray-800" alt="${n1}" crossorigin="anonymous">
+                             <img src="${toCorsUrl(img2)}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl transform rotate-6 ml-[-15px] border-2 border-gray-800" alt="${n2}" crossorigin="anonymous">
                          </div>
-                         <p class="text-xs font-bold truncate text-pink-100 mt-2">${n1} & ${n2}</p>
+                         <div class="min-h-[2rem] flex items-start justify-center pt-2">
+                            <p class="text-xs font-bold text-pink-100 title-text leading-tight">${n1} & ${n2}</p>
+                         </div>
                     </div>`;
                 };
 
                 const getEpHTML = (ep) => `
                     <div class="text-center">
                         <div class="overflow-hidden rounded-md shadow aspect-video mb-1">
-                            <img src="${ep.img || placeholder}" class="w-full h-full object-cover">
+                            <img src="${toCorsUrl(ep.img || placeholder)}" class="w-full h-full object-cover" crossorigin="anonymous">
                         </div>
-                        <p class="text-[10px] font-bold text-gray-300 truncate">${ep.name}</p>
+                        <div class="min-h-[1.5rem] flex items-start justify-center pt-1">
+                            <p class="text-[10px] font-bold text-gray-300 title-text leading-tight">${ep.name}</p>
+                        </div>
                         <p class="text-[10px] text-indigo-400">Ep.${ep.number}</p>
                     </div>`;
 
@@ -692,10 +747,10 @@
                     </div>` : '';
 
                 document.getElementById('summary-content').innerHTML = `
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-xl shadow-2xl relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-xl shadow-2xl relative overflow-hidden w-full max-w-[700px] mx-auto">
                         <!-- Header -->
                         <div class="flex items-center space-x-4 mb-8 relative z-10">
-                            <img src="${data.avatar}" class="w-16 h-16 rounded-full border-4 border-indigo-500 shadow-lg">
+                            <img src="${toCorsUrl(data.avatar)}" class="w-16 h-16 rounded-full border-4 border-indigo-500 shadow-lg" crossorigin="anonymous">
                             <div>
                                 <h2 class="text-3xl font-black italic tracking-tighter">${data.year}</h2>
                                 <p class="text-sm text-indigo-300 font-medium tracking-wide">ANIMATION YEAR IN REVIEW</p>
@@ -708,9 +763,9 @@
                             </div>
                         </div>
 
-                        <!-- Grid -->
+                        <!-- Grid: Anime | Characters | Music -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-                            <!-- Col 1: Anime -->
+                            <!-- Col 1: Anime (4 items) -->
                             <div class="space-y-4">
                                 <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Top Anime</h3>
                                 <div class="grid grid-cols-2 gap-3">
@@ -718,7 +773,8 @@
                                     ${getItemHTML('rank-end-2')}${getItemHTML('rank-end-3')}
                                 </div>
                             </div>
-                            <!-- Col 2: Characters -->
+                            
+                            <!-- Col 2: Characters & CP (3 items + CP) -->
                             <div class="space-y-4">
                                 <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Characters</h3>
                                 <div class="grid grid-cols-2 gap-3">
@@ -727,13 +783,23 @@
                                 </div>
                                 ${getCpHTML()}
                             </div>
-                            <!-- Col 3: Music & Staff -->
+
+                            <!-- Col 3: Music (4 items) -->
                             <div class="space-y-4">
-                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Music & Voice</h3>
+                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Music</h3>
                                 <div class="grid grid-cols-2 gap-3">
                                     ${getItemHTML('music-op')}${getItemHTML('music-ed')}
-                                    ${getItemHTML('music-artist')}${getItemHTML('staff-seiyuu-female')}
+                                    ${getItemHTML('music-in')}${getItemHTML('music-artist')}
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Voice Actors (Separate Row) -->
+                        <div class="mt-6 relative z-10">
+                            <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1 mb-4 text-center">Voice Actors</h3>
+                            <div class="flex justify-center gap-6">
+                                <div class="w-1/3 md:w-1/4">${getItemHTML('staff-seiyuu-female')}</div>
+                                <div class="w-1/3 md:w-1/4">${getItemHTML('staff-seiyuu-male')}</div>
                             </div>
                         </div>
 
