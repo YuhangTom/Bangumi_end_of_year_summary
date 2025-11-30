@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,22 +9,54 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+
         .loader {
             border: 3px solid #f3f3f3;
             border-radius: 50%;
             border-top: 3px solid #6366f1;
-            width: 20px; height: 20px;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .title-text { word-break: break-word; white-space: normal; line-height: 1.3; }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .title-text {
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.3;
+        }
     </style>
 </head>
+
 <body class="bg-gray-900 text-gray-200 min-h-screen pb-24">
 
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
@@ -37,44 +70,60 @@
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">用户数据</h2>
                     <div class="flex items-center space-x-2">
-                        <input type="text" id="bangumi-username" class="save-target bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="Bangumi ID">
-                        <button id="sync-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center transition">
+                        <input type="text" id="bangumi-username"
+                            class="save-target bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Bangumi ID">
+                        <button id="sync-user-btn"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center transition">
                             <span class="btn-text">同步数据</span>
                             <div class="loader ml-2 hidden"></div>
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div class="form-group col-span-2 sm:col-span-1 lg:col-span-1">
                         <div class="flex items-center space-x-3 mb-1">
-                            <img id="user-avatar-preview" src="https://placehold.co/100x100/1f2937/6b7280?text=User" class="w-10 h-10 rounded-full border-2 border-gray-600 object-cover">
+                            <img id="user-avatar-preview" src="https://placehold.co/100x100/1f2937/6b7280?text=User"
+                                class="w-10 h-10 rounded-full border-2 border-gray-600 object-cover">
                             <div>
                                 <label class="block text-xs text-gray-400">昵称</label>
-                                <input type="text" id="user-nickname" class="save-target bg-transparent border-none p-0 text-sm font-semibold text-white w-full focus:ring-0" placeholder="等待同步..." readonly>
+                                <input type="text" id="user-nickname"
+                                    class="save-target bg-transparent border-none p-0 text-sm font-semibold text-white w-full focus:ring-0"
+                                    placeholder="等待同步..." readonly>
                                 <input type="hidden" id="user-avatar-url" class="save-target">
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="year" class="block text-xs font-medium text-gray-400 mb-1">年份</label>
-                        <input type="number" id="year" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
+                        <input type="number" id="year"
+                            class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500"
+                            value="2025">
                     </div>
                     <div class="form-group">
                         <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数</label>
-                        <input type="number" id="watching-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="年内播出且看过">
+                        <input type="number" id="watching-count"
+                            class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500"
+                            placeholder="年内播出且看过">
                     </div>
                     <div class="form-group">
                         <label for="rewatched-count" class="block text-xs font-medium text-gray-400 mb-1">补番数</label>
-                        <input type="number" id="rewatched-count" class="w-full bg-gray-600 border border-gray-500 rounded-md p-2 cursor-not-allowed text-gray-300" placeholder="= 看番 - 追番" readonly>
+                        <input type="number" id="rewatched-count"
+                            class="w-full bg-gray-600 border border-gray-500 rounded-md p-2 cursor-not-allowed text-gray-300"
+                            placeholder="= 看番 - 追番" readonly>
                     </div>
                     <div class="form-group">
                         <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数</label>
-                        <input type="number" id="watched-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="年内看过">
+                        <input type="number" id="watched-count"
+                            class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500"
+                            placeholder="年内看过">
                     </div>
                     <div class="form-group">
                         <label for="total-watched" class="block text-xs font-medium text-gray-400 mb-1">累计看番数</label>
-                        <input type="number" id="total-watched" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="所有看过">
+                        <input type="number" id="total-watched"
+                            class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500"
+                            placeholder="所有看过">
                     </div>
                 </div>
                 <p id="sync-status" class="text-xs text-gray-500 mt-2 italic h-4"></p>
@@ -106,7 +155,7 @@
                     </div>
                 </div>
             </section>
-            
+
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度声优 & 歌手</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -118,7 +167,7 @@
 
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐</h2>
-                
+
                 <div class="mb-4">
                     <div class="grid grid-cols-3 gap-4">
                         <div id="music-op-1" class="manual-container"></div>
@@ -147,56 +196,81 @@
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">年度单集</h2>
-                    <button id="add-episode-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">+ 添加单集</button>
+                    <button id="add-episode-btn"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">+
+                        添加单集</button>
                 </div>
                 <div id="episodes-container" class="space-y-4"></div>
             </section>
-            
-            <div class="fixed bottom-0 left-0 right-0 p-4 bg-gray-900 border-t border-gray-800 flex justify-center z-40 shadow-xl">
-                 <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg transition-transform transform hover:scale-105 flex items-center">
+
+            <div
+                class="fixed bottom-0 left-0 right-0 p-4 bg-gray-900 border-t border-gray-800 flex justify-center z-40 shadow-xl">
+                <button id="generate-summary"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg transition-transform transform hover:scale-105 flex items-center">
                     <span class="mr-2">✨</span> 生成年度小结图片
                 </button>
             </div>
         </main>
     </div>
 
-    <div id="smart-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
-        <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all scale-100">
+    <div id="smart-modal"
+        class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
+        <div
+            class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all scale-100">
             <div class="p-5 border-b border-gray-700 flex justify-between items-center bg-gray-800 rounded-t-xl">
                 <h3 class="text-xl font-bold text-white">添加条目内容</h3>
-                <button class="close-modal-btn text-gray-400 hover:text-white text-2xl leading-none transition">&times;</button>
+                <button
+                    class="close-modal-btn text-gray-400 hover:text-white text-2xl leading-none transition">&times;</button>
             </div>
             <div class="p-6">
                 <div class="flex space-x-4 border-b border-gray-700 mb-4">
-                    <button class="tab-btn px-4 py-2 text-indigo-400 border-b-2 border-indigo-500 font-medium" data-tab="id">ID 自动获取</button>
+                    <button class="tab-btn px-4 py-2 text-indigo-400 border-b-2 border-indigo-500 font-medium"
+                        data-tab="id">ID 自动获取</button>
                     <button class="tab-btn px-4 py-2 text-gray-400 hover:text-gray-200" data-tab="manual">手动输入</button>
                 </div>
                 <div id="tab-id" class="tab-content space-y-4">
                     <div class="flex gap-2">
-                        <input type="number" id="api-id-input" class="flex-1 bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="Bangumi ID">
-                        <button id="fetch-api-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-md font-medium transition flex items-center">获取<div id="api-loader" class="loader ml-2 hidden" style="width: 16px; height: 16px; border-width: 2px;"></div></button>
+                        <input type="number" id="api-id-input"
+                            class="flex-1 bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white"
+                            placeholder="Bangumi ID">
+                        <button id="fetch-api-btn"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-md font-medium transition flex items-center">获取
+                            <div id="api-loader" class="loader ml-2 hidden"
+                                style="width: 16px; height: 16px; border-width: 2px;"></div>
+                        </button>
                     </div>
-                    <div id="api-preview" class="hidden mt-4 p-3 bg-gray-700/50 rounded-lg flex gap-3 items-center border border-gray-600">
+                    <div id="api-preview"
+                        class="hidden mt-4 p-3 bg-gray-700/50 rounded-lg flex gap-3 items-center border border-gray-600">
                         <div class="w-12 h-16 flex items-center justify-center overflow-hidden bg-gray-900">
                             <img id="api-preview-img" class="max-w-full max-h-full" style="width:auto;height:auto;">
                         </div>
-                        <div class="flex-1 min-w-0"><p id="api-preview-title" class="font-bold text-white truncate"></p></div>
-                        <button id="confirm-api-btn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">使用</button>
+                        <div class="flex-1 min-w-0">
+                            <p id="api-preview-title" class="font-bold text-white truncate"></p>
+                        </div>
+                        <button id="confirm-api-btn"
+                            class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">使用</button>
                     </div>
                     <p id="api-error" class="hidden text-red-400 text-sm mt-2"></p>
                 </div>
                 <div id="tab-manual" class="tab-content space-y-4 hidden">
-                    <input type="text" id="manual-name" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 text-white" placeholder="名称">
-                    <input type="text" id="manual-image-url" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 text-white" placeholder="图片URL">
-                    <div class="pt-2 text-right"><button id="manual-confirm-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md transition">确认添加</button></div>
+                    <input type="text" id="manual-name"
+                        class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 text-white" placeholder="名称">
+                    <input type="text" id="manual-image-url"
+                        class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 text-white"
+                        placeholder="图片URL">
+                    <div class="pt-2 text-right"><button id="manual-confirm-btn"
+                            class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md transition">确认添加</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="summary-modal" class="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
-         <div class="relative w-full max-w-4xl h-full flex flex-col items-center justify-center">
-            <button id="close-result-modal" class="absolute top-4 right-4 bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-gray-600 z-[60] shadow-lg cursor-pointer">&times;</button>
+    <div id="summary-modal"
+        class="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
+        <div class="relative w-full max-w-4xl h-full flex flex-col items-center justify-center">
+            <button id="close-result-modal"
+                class="absolute top-4 right-4 bg-gray-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-gray-600 z-[60] shadow-lg cursor-pointer">&times;</button>
             <div id="generation-loader" class="flex flex-col items-center justify-center text-white">
                 <div class="loader mb-4" style="width: 50px; height: 50px; border-width: 5px;"></div>
                 <p class="text-xl font-medium">正在生成高清图片...</p>
@@ -206,7 +280,8 @@
                     <h3 class="text-xl font-bold">生成成功！</h3>
                     <p class="text-sm text-gray-400">电脑端右键“图片另存为”，手机端长按保存</p>
                 </div>
-                <div class="w-full flex-1 overflow-auto custom-scrollbar flex justify-center bg-gray-900/50 rounded-lg border border-gray-800 p-4" id="image-wrapper"></div>
+                <div class="w-full flex-1 overflow-auto custom-scrollbar flex justify-center bg-gray-900/50 rounded-lg border border-gray-800 p-4"
+                    id="image-wrapper"></div>
             </div>
         </div>
     </div>
@@ -215,29 +290,29 @@
 
     <script>
         // --- GLOBAL SCOPE VARIABLES ---
-        var episodeCounter = 0; 
+        var episodeCounter = 0;
         var currentTargetId = null;
         var currentApiType = 'subject';
         var tempApiData = null;
 
-        window.removeEpisode = function(btn) { 
-            btn.closest('.episode-entry').remove(); 
+        window.removeEpisode = function (btn) {
+            btn.closest('.episode-entry').remove();
             const event = new Event('input', { bubbles: true });
             document.body.dispatchEvent(event);
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             const itemConfig = {
-                'rank-air-1': { label: '年度排名1 (播出)', type: 'subject' }, 
+                'rank-air-1': { label: '年度排名1 (播出)', type: 'subject' },
                 'rank-end-1': { label: '年度排名1 (完结)', type: 'subject' },
-                'rank-end-2': { label: '年度排名2 (完结)', type: 'subject' }, 
+                'rank-end-2': { label: '年度排名2 (完结)', type: 'subject' },
                 'rank-end-3': { label: '年度排名3 (完结)', type: 'subject' },
-                'char-female': { label: '女性', type: 'character' }, 
+                'char-female': { label: '女性', type: 'character' },
                 'char-male': { label: '男性', type: 'character' },
-                'char-other': { label: '其他', type: 'character' }, 
-                'cp-1': { label: 'CP 1', type: 'character' }, 
+                'char-other': { label: '其他', type: 'character' },
+                'cp-1': { label: 'CP 1', type: 'character' },
                 'cp-2': { label: 'CP 2', type: 'character' },
-                
+
                 // Music Expanded
                 'music-op-1': { label: 'OP 1', type: 'subject' },
                 'music-op-2': { label: 'OP 2', type: 'subject' },
@@ -248,11 +323,11 @@
                 'music-in-1': { label: 'IN 1', type: 'subject' },
                 'music-in-2': { label: 'IN 2', type: 'subject' },
                 'music-in-3': { label: 'IN 3', type: 'subject' },
-                
+
                 // Seiyuu & Artist (Merged)
                 'staff-seiyuu-female': { label: '女性声优', type: 'person' },
                 'staff-seiyuu-male': { label: '男性声优', type: 'person' },
-                'music-artist': { label: '歌手', type: 'person' }, 
+                'music-artist': { label: '歌手', type: 'person' },
             };
 
             // Init Manual Containers
@@ -344,7 +419,7 @@
                     episodesContainer.innerHTML = '';
                     state.episodes.forEach(ep => addEpisode(ep));
                     calculateRewatched();
-                } catch(e) { console.error(e); }
+                } catch (e) { console.error(e); }
             }
             document.body.addEventListener('input', (e) => {
                 if (e.target.matches('input') || e.target.matches('.save-target')) saveState();
@@ -352,12 +427,12 @@
 
             // --- Sync Logic ---
             async function fetchUserStats(username, targetYear) {
-                let finishedThisYear = 0; 
-                let newShowsFinished = 0; 
-                const limit = 50; 
+                let finishedThisYear = 0;
+                let newShowsFinished = 0;
+                const limit = 50;
                 let page = 0;
                 let hasMore = true;
-                const maxPages = 100; 
+                const maxPages = 100;
                 const targetYearInt = parseInt(targetYear, 10);
 
                 while (hasMore && page < maxPages) {
@@ -370,11 +445,11 @@
                         if (data.data.length === 0) { hasMore = false; break; }
 
                         for (const item of data.data) {
-                            const updated = item.updated_at || ""; 
+                            const updated = item.updated_at || "";
                             const itemYearStr = updated.substring(0, 4);
                             const itemYearInt = parseInt(itemYearStr, 10);
-                            
-                            if (itemYearInt > targetYearInt) { continue; } 
+
+                            if (itemYearInt > targetYearInt) { continue; }
                             else if (itemYearInt === targetYearInt) {
                                 finishedThisYear++;
                                 const airDate = item.subject?.date || "";
@@ -392,7 +467,7 @@
                 const username = inputs.username.value.trim();
                 const targetYear = inputs.year.value.toString();
                 if (!username) { alert("请输入 Bangumi 用户名"); return; }
-                
+
                 const btn = document.getElementById('sync-user-btn');
                 const btnText = btn.querySelector('.btn-text');
                 const loader = btn.querySelector('.loader');
@@ -405,10 +480,10 @@
                     const userRes = await fetch(`https://api.bgm.tv/v0/users/${username}`);
                     if (!userRes.ok) throw new Error("用户未找到");
                     const userData = await userRes.json();
-                    
+
                     inputs.nickname.value = userData.nickname;
                     inputs.avatar.src = userData.avatar.large;
-                    inputs.avatarHidden.value = userData.avatar.large; 
+                    inputs.avatarHidden.value = userData.avatar.large;
 
                     // Total
                     const totalRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
@@ -419,9 +494,9 @@
                     const stats = await fetchUserStats(username, targetYear);
                     inputs.watched.value = stats.finishedThisYear;
                     inputs.watching.value = stats.newShowsFinished;
-                    
+
                     calculateRewatched();
-                    saveState(); 
+                    saveState();
                     syncStatus.textContent = "同步完成！";
                 } catch (error) {
                     syncStatus.textContent = "同步失败: " + error.message;
@@ -434,7 +509,7 @@
             });
 
             function calculateRewatched() {
-                const diff = (parseInt(inputs.watched.value)||0) - (parseInt(inputs.watching.value)||0);
+                const diff = (parseInt(inputs.watched.value) || 0) - (parseInt(inputs.watching.value) || 0);
                 inputs.rewatched.value = diff > 0 ? diff : 0;
             }
             inputs.watched.addEventListener('input', calculateRewatched);
@@ -465,7 +540,7 @@
                     const id = entry.id.split('-')[1];
                     const animeId = `ep-anime-${id}`;
                     const name = document.getElementById(`data-name-${animeId}`)?.value;
-                    if(name) {
+                    if (name) {
                         data.episodes.push({
                             name: name,
                             img: document.getElementById(`data-img-${animeId}`)?.value,
@@ -475,7 +550,7 @@
                 });
 
                 renderStage.innerHTML = getTemplateHTML(data);
-                
+
                 // Preload
                 const imgs = renderStage.querySelectorAll('img');
                 const promises = Array.from(imgs).map(img => {
@@ -493,7 +568,7 @@
                 try {
                     const canvas = await html2canvas(renderStage, {
                         useCORS: true,
-                        scale: 3, 
+                        scale: 3,
                         backgroundColor: '#111827',
                         width: 900,
                         windowWidth: 900
@@ -514,16 +589,16 @@
 
             // --- HTML Template ---
             function getTemplateHTML(data) {
-                const toCors = (url) => url && !url.includes('placehold') && !url.startsWith('data') 
-                    ? `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp&w=400` 
+                const toCors = (url) => url && !url.includes('placehold') && !url.startsWith('data')
+                    ? `https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=webp&w=400`
                     : (url || 'https://placehold.co/300x400/1f2937/374151?text=Empty');
 
                 // MODIFIED cardItem: Moves label OUTSIDE and ABOVE the bg-gray-800 card
                 const cardItem = (id, label = null) => {
                     const item = data.items[id];
-                    
-                    const labelHTML = label 
-                        ? `<div class="mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">${label}</div>` 
+
+                    const labelHTML = label
+                        ? `<div class="mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">${label}</div>`
                         : '';
 
                     return `
@@ -546,9 +621,9 @@
                     const n1 = i1?.name || '';
                     const n2 = i2?.name || '';
                     const cpName = (n1 && n2) ? `${n1} x ${n2}` : 'CP';
-                    
-                    const labelHTML = label 
-                        ? `<div class="mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">${label}</div>` 
+
+                    const labelHTML = label
+                        ? `<div class="mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider">${label}</div>`
                         : '';
 
                     return `
@@ -657,7 +732,7 @@
                 </div>`;
             }
 
-            function addEpisode(data={}) {
+            function addEpisode(data = {}) {
                 episodeCounter++;
                 const uniqueId = episodeCounter;
                 const animeId = `ep-anime-${uniqueId}`;
@@ -672,16 +747,16 @@
                         <div class="relative manual-trigger group" data-target-id="${animeId}" data-api-type="subject">
                             <div class="w-full h-24 bg-transparent rounded-md overflow-hidden border border-gray-700 flex items-center justify-center relative">
                                 <div id="img-container-${animeId}" class="w-full h-full ${imgDisplayClass} flex items-center justify-center">
-                                    <img id="img-${animeId}" src="${data.img||''}" class="save-target-img max-w-full max-h-full" style="width: auto; height: auto;">
+                                    <img id="img-${animeId}" src="${data.img || ''}" class="save-target-img max-w-full max-h-full" style="width: auto; height: auto;">
                                 </div>
                                 <div id="placeholder-${animeId}" class="absolute inset-0 flex flex-col items-center justify-center cursor-pointer border border-dashed border-gray-500 text-gray-500 hover:border-indigo-500 ${placeDisplayClass}"><span class="text-xs">添加</span></div>
                             </div>
-                            <input type="hidden" id="data-name-${animeId}" class="save-target" value="${data.name||''}"><input type="hidden" id="data-img-${animeId}" class="save-target" value="${data.img||''}">
+                            <input type="hidden" id="data-name-${animeId}" class="save-target" value="${data.name || ''}"><input type="hidden" id="data-img-${animeId}" class="save-target" value="${data.img || ''}">
                         </div>
                     </div>
                     <div class="flex-1">
                         <label class="block text-xs font-medium text-gray-400 mb-1">集数</label>
-                        <input type="number" id="ep-number-${uniqueId}" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-sm" placeholder="Ep." value="${data.number||''}">
+                        <input type="number" id="ep-number-${uniqueId}" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-sm" placeholder="Ep." value="${data.number || ''}">
                         <button class="text-red-400 text-xs mt-2 hover:underline" onclick="removeEpisode(this)">删除</button>
                     </div>`;
                 episodesContainer.appendChild(entry);
@@ -714,31 +789,32 @@
             });
             document.getElementById('fetch-api-btn').addEventListener('click', async () => {
                 const id = document.getElementById('api-id-input').value;
-                if(!id) return;
+                if (!id) return;
                 const endpoint = currentApiType === 'subject' ? `https://api.bgm.tv/v0/subjects/${id}` : `https://api.bgm.tv/v0/${currentApiType}s/${id}`;
                 try {
                     const res = await fetch(endpoint);
                     if (!res.ok) throw new Error("ID Error");
                     const d = await res.json();
                     const name = d.name_cn || d.name;
-                    const img = (d.images?.large || d.images?.medium || '').replace('http:','https:');
-                    tempApiData = {name, img};
+                    const img = (d.images?.large || d.images?.medium || '').replace('http:', 'https:');
+                    tempApiData = { name, img };
                     document.getElementById('api-preview-title').textContent = name;
                     document.getElementById('api-preview-img').src = `https://images.weserv.nl/?url=${encodeURIComponent(img)}&output=webp`;
                     document.getElementById('api-preview').classList.remove('hidden');
-                } catch(e){ alert("ID Error"); }
+                } catch (e) { alert("ID Error"); }
             });
             document.getElementById('confirm-api-btn').addEventListener('click', () => {
-                if(tempApiData) { updateImageDisplay(currentTargetId, tempApiData.img); document.getElementById(`data-name-${currentTargetId}`).value = tempApiData.name; document.getElementById(`data-img-${currentTargetId}`).value = tempApiData.img; saveState(); smartModal.classList.add('hidden'); }
+                if (tempApiData) { updateImageDisplay(currentTargetId, tempApiData.img); document.getElementById(`data-name-${currentTargetId}`).value = tempApiData.name; document.getElementById(`data-img-${currentTargetId}`).value = tempApiData.img; saveState(); smartModal.classList.add('hidden'); }
             });
             document.getElementById('manual-confirm-btn').addEventListener('click', () => {
                 const name = document.getElementById('manual-name').value;
                 const img = document.getElementById('manual-image-url').value;
-                if(name && img) { updateImageDisplay(currentTargetId, img); document.getElementById(`data-name-${currentTargetId}`).value = name; document.getElementById(`data-img-${currentTargetId}`).value = img; saveState(); smartModal.classList.add('hidden'); }
+                if (name && img) { updateImageDisplay(currentTargetId, img); document.getElementById(`data-name-${currentTargetId}`).value = name; document.getElementById(`data-img-${currentTargetId}`).value = img; saveState(); smartModal.classList.add('hidden'); }
             });
 
             loadState();
         });
     </script>
 </body>
+
 </html>
