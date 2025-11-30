@@ -42,7 +42,7 @@
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white">Bangumi 年度小结生成器</h1>
-            <p class="text-gray-400 mt-2">ID 精准填充 · 数据一键同步</p>
+            <p class="text-gray-400 mt-2">ID 精准填充 · 全历史年份支持</p>
         </header>
 
         <main class="space-y-8">
@@ -74,12 +74,12 @@
                         <input type="number" id="year" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
                     </div>
                     <div class="form-group">
-                        <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数 (今年)</label>
-                        <input type="number" id="watching-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="手动或同步">
+                        <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数 (完结)</label>
+                        <input type="number" id="watching-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年播出且看完">
                     </div>
                     <div class="form-group">
-                        <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数 (今年)</label>
-                        <input type="number" id="watched-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="需手动输入">
+                        <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数 (阅历)</label>
+                        <input type="number" id="watched-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年看过的总数">
                     </div>
                     <div class="form-group">
                         <label for="rewatched-count" class="block text-xs font-medium text-gray-400 mb-1">补番数 (自动)</label>
@@ -87,10 +87,10 @@
                     </div>
                     <div class="form-group">
                         <label for="total-watched" class="block text-xs font-medium text-gray-400 mb-1">累计看番数</label>
-                        <input type="number" id="total-watched" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="手动或同步">
+                        <input type="number" id="total-watched" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="历史总计">
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">* 注：API 无法直接获取特定年份的看番数，请手动填写“看番数 (今年)”。“追番”和“累计”可同步。</p>
+                <p id="sync-status" class="text-xs text-gray-500 mt-2 italic h-4"></p>
             </section>
 
             <!-- Section 2: Rankings -->
@@ -266,13 +266,15 @@
             const episodesContainer = document.getElementById('episodes-container');
             
             // Basic Info Inputs
-            const watchingCountInput = document.getElementById('watching-count');
-            const watchedCountInput = document.getElementById('watched-count');
-            const rewatchedCountInput = document.getElementById('rewatched-count');
+            const yearInput = document.getElementById('year');
+            const watchingCountInput = document.getElementById('watching-count'); // 追番
+            const watchedCountInput = document.getElementById('watched-count');   // 看番
+            const rewatchedCountInput = document.getElementById('rewatched-count'); // 补番
             const totalWatchedInput = document.getElementById('total-watched');
             const usernameInput = document.getElementById('bangumi-username');
             const nicknameDisplay = document.getElementById('user-nickname');
             const avatarPreview = document.getElementById('user-avatar-preview');
+            const syncStatus = document.getElementById('sync-status');
             
             // Sync Button
             const syncBtn = document.getElementById('sync-user-btn');
@@ -291,27 +293,97 @@
             const manualConfirmBtn = document.getElementById('manual-confirm-btn');
 
             let currentTargetId = null;
-            let currentApiType = 'subject'; // subject, character, person
+            let currentApiType = 'subject'; 
             let episodeCounter = 0;
-            let tempApiData = null; // Store fetched data temporarily
+            let tempApiData = null; 
+
+            // Helper: Fetch Collection with Filtering
+            // Returns object with multiple stats
+            async function fetchUserStats(username, targetYear) {
+                let finishedThisYear = 0; // Total Watched in targetYear
+                let newShowsFinished = 0; // Watched in targetYear AND Aired in targetYear
+
+                const limit = 50; 
+                let page = 0;
+                let hasMore = true;
+                // Increase scan limit significantly (approx 5000 items) to cover older years
+                const maxPages = 100; 
+                const targetYearInt = parseInt(targetYear, 10);
+
+                // Scan "Watched" (Type 2)
+                while (hasMore && page < maxPages) {
+                    try {
+                        // Update status for user feedback
+                        if (syncStatus) syncStatus.textContent = `正在扫描第 ${page + 1} 页历史数据...`;
+
+                        const offset = page * limit;
+                        const res = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=${limit}&offset=${offset}`);
+                        if (!res.ok) break;
+                        const data = await res.json();
+                        
+                        if (data.data.length === 0) { hasMore = false; break; }
+
+                        for (const item of data.data) {
+                            // updated_at string format: "2025-01-01T..."
+                            const updated = item.updated_at || ""; 
+                            const itemYearStr = updated.substring(0, 4);
+                            const itemYearInt = parseInt(itemYearStr, 10);
+
+                            // Logic: 
+                            // 1. If item updated in FUTURE relative to target (unlikely if target is current year, but possible if looking at old year), ignore.
+                            // 2. If item updated IN target year, count it.
+                            // 3. If item updated BEFORE target year (e.g. found 2022 when looking for 2023), stop scanning.
+                            // NOTE: API is usually sorted by updated_at desc. 
+                            
+                            if (itemYearInt > targetYearInt) {
+                                // Too new, keep searching deeper
+                                continue; 
+                            } else if (itemYearInt === targetYearInt) {
+                                // Match!
+                                finishedThisYear++;
+                                
+                                // Check air date for "New Show" status
+                                const airDate = item.subject?.date || "";
+                                if (airDate.startsWith(targetYear)) {
+                                    newShowsFinished++;
+                                }
+                            } else if (itemYearInt < targetYearInt) {
+                                // Found data OLDER than target year.
+                                // Since data is sorted desc, everything after this is also too old.
+                                // We can safely stop.
+                                hasMore = false;
+                                break; 
+                            }
+                        }
+
+                        if (data.data.length < limit) hasMore = false;
+                        page++;
+                    } catch (e) {
+                        console.error("Error scanning watched", e);
+                        break;
+                    }
+                }
+
+                return { finishedThisYear, newShowsFinished };
+            }
 
             // --- Logic: User Sync ---
             syncBtn.addEventListener('click', async () => {
                 const username = usernameInput.value.trim();
+                const targetYear = yearInput.value.toString();
+
                 if (!username) { alert("请输入 Bangumi 用户名"); return; }
                 
                 const btnText = syncBtn.querySelector('.btn-text');
                 const loader = syncBtn.querySelector('.loader');
                 
                 btnText.textContent = "同步中...";
+                syncStatus.textContent = "正在连接 Bangumi...";
                 loader.classList.remove('hidden');
                 syncBtn.disabled = true;
 
                 try {
-                    // 1. Fetch User Profile (Avatar, Nickname)
-                    // Using legacy API because v0/users/{username} is sometimes stricter or has different shape, 
-                    // but v0 is generally preferred. Let's use v0 if possible, fallback to scraping logic if needed? 
-                    // Actually, v0/users/{username} is robust.
+                    // 1. Profile
                     const userRes = await fetch(`https://api.bgm.tv/v0/users/${username}`);
                     if (!userRes.ok) throw new Error("用户未找到");
                     const userData = await userRes.json();
@@ -319,74 +391,51 @@
                     nicknameDisplay.value = userData.nickname;
                     avatarPreview.src = userData.avatar.large;
 
-                    // 2. Fetch User Collections Stats
-                    // Endpoint: /v0/users/{username}/collections
-                    // But we want counts. Legacy API /user/{username} returns counts in the HTML usually, but API 
-                    // has /v0/users/{username} returning 'user_group'. 
-                    // Actually, we need to fetch specific status to get counts if the main profile doesn't have it.
-                    // Wait, /v0/users/{username} DOES NOT return counts.
-                    // We must use the legacy /user/{username} (returns HTML) or separate calls.
-                    // Let's try getting the user's progress.
-                    // The public API doesn't expose a simple "stats" endpoint easily without auth in v0.
-                    // EXCEPT: https://api.bgm.tv/user/{username} (Legacy JSON) - This is deprecated but might still work?
-                    // Let's try to fetch collection data.
-                    
-                    // Workaround: We will rely on user input for precise yearly numbers, 
-                    // but we can try to get "Watching" and "Total" from a different angle if possible.
-                    // Actually, for a static page, we might just have to fetch the user's collection list? No, too heavy.
-                    // Let's try the legacy endpoint which is often still alive for read-only.
-                    // If legacy fails, we just update avatar/nickname.
-                    
-                    try {
-                        // Legacy endpoint usually returns stats in the 'status' field? No.
-                        // We will try to fetch the avatar/name which we did. 
-                        // For stats, we might be out of luck with a pure frontend public API without OAuth for counts specifically 
-                        // unless we scrape (which we shouldn't). 
-                        // WAIT! We can check https://api.bgm.tv/v0/users/{username}/collections?subject_type=2&type=3&limit=0
-                        // The 'total' field in pagination might give us the count!
-                        
-                        // Fetch Watching (Type 3)
-                        const watchingRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=3&limit=1`);
-                        const watchingData = await watchingRes.json();
-                        if (watchingData.total !== undefined) {
-                            watchingCountInput.value = watchingData.total;
-                            calculateRewatched(); // Recalc
-                        }
-
-                        // Fetch Total Watched (Type 2) - Cumulative
-                        const watchedRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
-                        const watchedData = await watchedRes.json();
-                        if (watchedData.total !== undefined) {
-                            totalWatchedInput.value = watchedData.total;
-                        }
-
-                    } catch (e) {
-                        console.warn("Stats fetch failed, but profile loaded", e);
+                    // 2. Total Cumulative
+                    const totalRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
+                    const totalData = await totalRes.json();
+                    if (totalData.total !== undefined) {
+                        totalWatchedInput.value = totalData.total;
                     }
 
+                    // 3. Smart Stats
+                    syncStatus.textContent = `正在分析 ${targetYear} 年数据...`;
+                    const stats = await fetchUserStats(username, targetYear);
+                    
+                    // Logic Mapping:
+                    // 看番数 (今年完成) = stats.finishedThisYear
+                    watchedCountInput.value = stats.finishedThisYear;
+
+                    // 追番数 (今年完结新番) = New Shows Finished only
+                    watchingCountInput.value = stats.newShowsFinished;
+                    
+                    // Recalc Rewatched
+                    calculateRewatched();
+                    syncStatus.textContent = "同步完成！";
+
                 } catch (error) {
+                    syncStatus.textContent = "同步出错";
                     alert("同步失败: " + error.message);
                 } finally {
                     btnText.textContent = "同步数据";
                     loader.classList.add('hidden');
                     syncBtn.disabled = false;
+                    setTimeout(() => { syncStatus.textContent = ""; }, 5000);
                 }
             });
 
             // --- Logic: Calculations ---
             function calculateRewatched() {
-                // Rewatched (补番) = Watched this year - Watching (wait, logic check)
-                // Logic update based on previous conversation:
-                // "补番数" = "看番数 (今年) - 追番数 (今年)"
-                // Note: Watching usually means "Currently Watching" in Bangumi terms, but here the user
-                // defined it as "New shows from this year".
-                // Let's stick to the math: Rewatched = WatchedCount - WatchingCount.
+                // Logic: 
+                // Watched = All Finished This Year
+                // Watching = New Shows Finished This Year
+                // Rewatched = Watched - Watching
                 
-                const watching = parseInt(watchingCountInput.value, 10) || 0;
                 const watched = parseInt(watchedCountInput.value, 10) || 0;
-                const rewatched = watched - watching;
-                // If negative, just show 0
-                rewatchedCountInput.value = rewatched >= 0 ? rewatched : 0;
+                const watching = parseInt(watchingCountInput.value, 10) || 0;
+                
+                const diff = watched - watching;
+                rewatchedCountInput.value = diff >= 0 ? diff : 0;
             }
             watchingCountInput.addEventListener('input', calculateRewatched);
             watchedCountInput.addEventListener('input', calculateRewatched);
@@ -399,16 +448,14 @@
                 const trigger = e.target.closest('.manual-trigger');
                 if (trigger) {
                     currentTargetId = trigger.dataset.targetId;
-                    currentApiType = trigger.dataset.apiType || 'subject'; // Default subject
+                    currentApiType = trigger.dataset.apiType || 'subject'; 
                     
-                    // Reset Modal State
                     apiIdInput.value = '';
                     apiPreview.classList.add('hidden');
                     apiError.classList.add('hidden');
                     document.getElementById('manual-name').value = document.getElementById(`data-name-${currentTargetId}`).value;
                     document.getElementById('manual-image-url').value = document.getElementById(`data-img-${currentTargetId}`).value;
                     
-                    // Switch to ID tab by default
                     switchTab('id');
                     smartModal.classList.remove('hidden');
                 }
@@ -446,10 +493,6 @@
                 tempApiData = null;
 
                 try {
-                    // Determine endpoint based on type
-                    // subject: /v0/subjects/{id}
-                    // character: /v0/characters/{id}
-                    // person: /v0/persons/{id}
                     let endpoint = `https://api.bgm.tv/v0/subjects/${id}`;
                     if (currentApiType === 'character') endpoint = `https://api.bgm.tv/v0/characters/${id}`;
                     if (currentApiType === 'person') endpoint = `https://api.bgm.tv/v0/persons/${id}`;
@@ -459,16 +502,12 @@
                     
                     const data = await res.json();
                     
-                    // Extract data (Subject/Person/Character have similar 'name' and 'images' fields in v0)
                     const name = data.name_cn || data.name;
                     const img = data.images?.large || data.images?.medium || 'https://placehold.co/225x318/1f2937/374151?text=No+Img';
-                    
-                    // Fix protocol relative urls
                     const finalImg = img.startsWith('//') ? `https:${img}` : img;
 
                     tempApiData = { name, img: finalImg };
                     
-                    // Show Preview
                     apiPreviewImg.src = finalImg;
                     apiPreviewTitle.textContent = name;
                     apiPreview.classList.remove('hidden');
@@ -481,7 +520,6 @@
                 }
             });
 
-            // Confirm API Data
             confirmApiBtn.addEventListener('click', () => {
                 if (tempApiData) {
                     applyItemData(tempApiData.name, tempApiData.img);
@@ -489,7 +527,6 @@
                 }
             });
 
-            // Confirm Manual Data
             manualConfirmBtn.addEventListener('click', () => {
                 const name = document.getElementById('manual-name').value;
                 const imageUrl = document.getElementById('manual-image-url').value;
@@ -525,7 +562,6 @@
                 entry.className = 'episode-entry flex items-end space-x-4 p-3 bg-gray-700/50 rounded-lg border border-gray-600 mb-4';
                 entry.id = `episode-${episodeCounter}`;
                 
-                // Note: default api-type for episode anime is 'subject'
                 entry.innerHTML = `
                     <div class="w-1/3 manual-container">
                         <label class="block text-xs font-medium text-gray-400 mb-1">动画</label>
@@ -546,7 +582,6 @@
                 episodesContainer.appendChild(entry);
             });
 
-            // Close Modals
             document.querySelectorAll('.close-modal-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     smartModal.classList.add('hidden');
@@ -589,11 +624,10 @@
                 });
                 
                 document.querySelectorAll('.episode-entry').forEach((entry) => {
-                    const idPart = entry.id.split('-')[1]; // get number from episode-1
+                    const idPart = entry.id.split('-')[1]; 
                     const animeId = `ep-anime-${idPart}`;
                     const numInput = document.getElementById(`ep-number-${idPart}`);
                     
-                    // Safety check if elements exist
                     if (numInput && document.getElementById(`data-name-${animeId}`)) {
                          data.episodes.push({
                             name: document.getElementById(`data-name-${animeId}`).value,
@@ -657,7 +691,6 @@
                         </div>
                     </div>` : '';
 
-                // Summary Layout
                 document.getElementById('summary-content').innerHTML = `
                     <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-xl shadow-2xl relative overflow-hidden">
                         <!-- Header -->
@@ -669,8 +702,8 @@
                                 <p class="text-xs text-gray-500 mt-0.5">@${data.nickname}</p>
                             </div>
                             <div class="ml-auto flex space-x-6 text-right">
-                                <div><p class="text-2xl font-bold text-white">${data.watching}</p><p class="text-[10px] text-gray-400 uppercase">追番(今年)</p></div>
-                                <div><p class="text-2xl font-bold text-white">${data.watched}</p><p class="text-[10px] text-gray-400 uppercase">看番(今年)</p></div>
+                                <div><p class="text-2xl font-bold text-white">${data.watching}</p><p class="text-[10px] text-gray-400 uppercase">追番(${data.year}完结)</p></div>
+                                <div><p class="text-2xl font-bold text-white">${data.watched}</p><p class="text-[10px] text-gray-400 uppercase">看番(${data.year}完成)</p></div>
                                 <div><p class="text-2xl font-bold text-indigo-400">${data.total}</p><p class="text-[10px] text-gray-400 uppercase">累计</p></div>
                             </div>
                         </div>
