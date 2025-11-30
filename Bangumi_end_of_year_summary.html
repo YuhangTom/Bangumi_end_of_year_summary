@@ -29,15 +29,15 @@
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white">Bangumi 年度小结生成器</h1>
-            <p class="text-gray-400 mt-2">ID 精准填充 · 智能数据同步 · 一键生成长图</p>
+            <p class="text-gray-400 mt-2">Konico · Powered by AI</p>
         </header>
 
         <main class="space-y-8">
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <h2 class="text-2xl font-semibold">基本数据</h2>
+                    <h2 class="text-2xl font-semibold">用户数据</h2>
                     <div class="flex items-center space-x-2">
-                        <input type="text" id="bangumi-username" class="save-target bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="输入用户名">
+                        <input type="text" id="bangumi-username" class="save-target bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="Bangumi ID">
                         <button id="sync-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center transition">
                             <span class="btn-text">同步数据</span>
                             <div class="loader ml-2 hidden"></div>
@@ -61,20 +61,20 @@
                         <input type="number" id="year" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
                     </div>
                     <div class="form-group">
-                        <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数 (完结)</label>
-                        <input type="number" id="watching-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年播出且看完">
+                        <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数</label>
+                        <input type="number" id="watching-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="年内播出且看过">
                     </div>
                     <div class="form-group">
-                        <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数 (阅历)</label>
-                        <input type="number" id="watched-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="当年看过的总数">
-                    </div>
-                    <div class="form-group">
-                        <label for="rewatched-count" class="block text-xs font-medium text-gray-400 mb-1">补番数 (自动)</label>
+                        <label for="rewatched-count" class="block text-xs font-medium text-gray-400 mb-1">补番数</label>
                         <input type="number" id="rewatched-count" class="w-full bg-gray-600 border border-gray-500 rounded-md p-2 cursor-not-allowed text-gray-300" placeholder="= 看番 - 追番" readonly>
                     </div>
                     <div class="form-group">
+                        <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数</label>
+                        <input type="number" id="watched-count" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="年内看过">
+                    </div>
+                    <div class="form-group">
                         <label for="total-watched" class="block text-xs font-medium text-gray-400 mb-1">累计看番数</label>
-                        <input type="number" id="total-watched" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="历史总计">
+                        <input type="number" id="total-watched" class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="所有看过">
                     </div>
                 </div>
                 <p id="sync-status" class="text-xs text-gray-500 mt-2 italic h-4"></p>
@@ -82,7 +82,7 @@
             </section>
 
             <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度排名</h2>
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度动画</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div id="rank-air-1" class="manual-container"></div>
                     <div id="rank-end-1" class="manual-container"></div>
@@ -120,7 +120,6 @@
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐</h2>
                 
                 <div class="mb-4">
-                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Opening (Top 3)</h3>
                     <div class="grid grid-cols-3 gap-4">
                         <div id="music-op-1" class="manual-container"></div>
                         <div id="music-op-2" class="manual-container"></div>
@@ -129,7 +128,6 @@
                 </div>
 
                 <div class="mb-4">
-                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Ending (Top 3)</h3>
                     <div class="grid grid-cols-3 gap-4">
                         <div id="music-ed-1" class="manual-container"></div>
                         <div id="music-ed-2" class="manual-container"></div>
@@ -138,7 +136,6 @@
                 </div>
 
                 <div class="mb-4">
-                    <h3 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Insert (Top 3)</h3>
                     <div class="grid grid-cols-3 gap-4">
                         <div id="music-in-1" class="manual-container"></div>
                         <div id="music-in-2" class="manual-container"></div>
@@ -156,7 +153,7 @@
             </section>
             
             <div class="fixed bottom-0 left-0 right-0 p-4 bg-gray-900 border-t border-gray-800 flex justify-center z-40 shadow-xl">
-                 <button id="generate-summary" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg transition-transform transform hover:scale-105 flex items-center">
+                 <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg transition-transform transform hover:scale-105 flex items-center">
                     <span class="mr-2">✨</span> 生成年度小结图片
                 </button>
             </div>
@@ -235,9 +232,9 @@
                 'rank-end-1': { label: '年度排名1 (完结)', type: 'subject' },
                 'rank-end-2': { label: '年度排名2 (完结)', type: 'subject' }, 
                 'rank-end-3': { label: '年度排名3 (完结)', type: 'subject' },
-                'char-female': { label: '女性角色', type: 'character' }, 
-                'char-male': { label: '男性角色', type: 'character' },
-                'char-other': { label: '其他角色', type: 'character' }, 
+                'char-female': { label: '女性', type: 'character' }, 
+                'char-male': { label: '男性', type: 'character' },
+                'char-other': { label: '其他', type: 'character' }, 
                 'cp-1': { label: 'CP 1', type: 'character' }, 
                 'cp-2': { label: 'CP 2', type: 'character' },
                 
@@ -255,7 +252,7 @@
                 // Seiyuu & Artist (Merged)
                 'staff-seiyuu-female': { label: '女性声优', type: 'person' },
                 'staff-seiyuu-male': { label: '男性声优', type: 'person' },
-                'music-artist': { label: '年度歌手', type: 'person' }, 
+                'music-artist': { label: '歌手', type: 'person' }, 
             };
 
             // Init Manual Containers
@@ -365,7 +362,7 @@
 
                 while (hasMore && page < maxPages) {
                     try {
-                        if (syncStatus) syncStatus.textContent = `正在扫描第 ${page + 1} 页历史数据...`;
+                        if (syncStatus) syncStatus.textContent = `正在扫描第 ${page + 1} 页看过...`;
                         const offset = page * limit;
                         const res = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=${limit}&offset=${offset}`);
                         if (!res.ok) break;
@@ -609,15 +606,20 @@
 
                     <div class="mb-8">
                         <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-indigo-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度动画</h2></div>
-                        <div class="grid grid-cols-4 gap-4">${cardItem('rank-air-1')}${cardItem('rank-end-1')}${cardItem('rank-end-2')}${cardItem('rank-end-3')}</div>
+                        <div class="grid grid-cols-4 gap-4">
+                            ${cardItem('rank-air-1', '年度排名1 (播出)')}
+                            ${cardItem('rank-end-1', '年度排名1 (完结)')}
+                            ${cardItem('rank-end-2', '年度排名2 (完结)')}
+                            ${cardItem('rank-end-3', '年度排名3 (完结)')}
+                        </div>
                     </div>
 
                     <div class="mb-8">
                         <div class="flex items-center mb-4"><div class="w-1.5 h-6 bg-pink-500 mr-3 flex-shrink-0" style="margin-top: 5mm;"></div><h2 class="text-xl font-bold uppercase tracking-wider">年度角色</h2></div>
                         <div class="grid grid-cols-4 gap-4">
-                            ${cardItem('char-female', '女性角色')}
-                            ${cardItem('char-male', '男性角色')}
-                            ${cardItem('char-other', '其他角色')}
+                            ${cardItem('char-female', '女性')}
+                            ${cardItem('char-male', '男性')}
+                            ${cardItem('char-other', '其他')}
                             ${cpCard('CP')}
                         </div>
                     </div>
@@ -627,7 +629,7 @@
                         <div class="grid grid-cols-3 gap-6">
                             ${cardItem('staff-seiyuu-female', '女性声优')}
                             ${cardItem('staff-seiyuu-male', '男性声优')}
-                            ${cardItem('music-artist', '年度歌手')}
+                            ${cardItem('music-artist', '歌手')}
                         </div>
                     </div>
 
