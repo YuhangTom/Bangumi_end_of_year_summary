@@ -10,71 +10,91 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* 自定义滚动条样式 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
         .placeholder-image {
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23374151FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-            transition: background-color 0.2s;
+            transition: all 0.2s;
         }
         .placeholder-image:hover {
             background-color: rgba(55, 65, 81, 0.5);
+            border-color: #6366f1;
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #6366f1;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200">
+<body class="bg-gray-900 text-gray-200 min-h-screen">
 
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white">Bangumi 年度小结生成器</h1>
-            <p class="text-gray-400 mt-2">创建你独一无二的动画年度总结</p>
+            <p class="text-gray-400 mt-2">ID 精准填充 · 数据一键同步</p>
         </header>
 
         <main class="space-y-8">
-            <!-- Section 1: Basic Info -->
-            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">基本数据</h2>
+            <!-- Section 1: Basic Info with Auto-Sync -->
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                    <h2 class="text-2xl font-semibold">基本数据</h2>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="bangumi-username" class="bg-gray-700 border border-gray-600 rounded-md p-1.5 text-sm w-32 focus:ring-2 focus:ring-indigo-500" placeholder="输入用户名">
+                        <button id="sync-user-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm flex items-center transition">
+                            <span class="btn-text">同步数据</span>
+                            <div class="loader ml-2 hidden"></div>
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="form-group col-span-2 sm:col-span-1 lg:col-span-1">
+                        <div class="flex items-center space-x-3 mb-1">
+                            <img id="user-avatar-preview" src="https://placehold.co/100x100/1f2937/6b7280?text=User" class="w-10 h-10 rounded-full border-2 border-gray-600 object-cover">
+                            <div>
+                                <label class="block text-xs text-gray-400">昵称</label>
+                                <input type="text" id="user-nickname" class="bg-transparent border-none p-0 text-sm font-semibold text-white w-full focus:ring-0" placeholder="等待同步..." readonly>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
-                        <label for="year" class="block text-sm font-medium text-gray-400 mb-1">年份</label>
+                        <label for="year" class="block text-xs font-medium text-gray-400 mb-1">年份</label>
                         <input type="number" id="year" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" value="2025">
                     </div>
                     <div class="form-group">
-                        <label for="watching-count" class="block text-sm font-medium text-gray-400 mb-1">追番数</label>
-                        <input type="number" id="watching-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="今年新番数">
+                        <label for="watching-count" class="block text-xs font-medium text-gray-400 mb-1">追番数 (今年)</label>
+                        <input type="number" id="watching-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="手动或同步">
                     </div>
                     <div class="form-group">
-                        <label for="rewatched-count" class="block text-sm font-medium text-gray-400 mb-1">补番数</label>
-                        <input type="number" id="rewatched-count" class="w-full bg-gray-600 border border-gray-500 rounded-md p-2 cursor-not-allowed" placeholder="自动计算" readonly>
+                        <label for="watched-count" class="block text-xs font-medium text-gray-400 mb-1">看番数 (今年)</label>
+                        <input type="number" id="watched-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="需手动输入">
                     </div>
                     <div class="form-group">
-                        <label for="watched-count" class="block text-sm font-medium text-gray-400 mb-1">看番数</label>
-                        <input type="number" id="watched-count" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="今年总看番">
+                        <label for="rewatched-count" class="block text-xs font-medium text-gray-400 mb-1">补番数 (自动)</label>
+                        <input type="number" id="rewatched-count" class="w-full bg-gray-600 border border-gray-500 rounded-md p-2 cursor-not-allowed text-gray-300" placeholder="= 看番 - 追番" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="total-watched" class="block text-sm font-medium text-gray-400 mb-1">累计看番数</label>
-                        <input type="number" id="total-watched" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="历史总计">
-                    </div>
-                     <div class="form-group">
-                        <label for="bangumi-username" class="block text-sm font-medium text-gray-400 mb-1">Bangumi 用户名</label>
-                        <input type="text" id="bangumi-username" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="你的用户名">
+                        <label for="total-watched" class="block text-xs font-medium text-gray-400 mb-1">累计看番数</label>
+                        <input type="number" id="total-watched" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="手动或同步">
                     </div>
                 </div>
+                <p class="text-xs text-gray-500 mt-2">* 注：API 无法直接获取特定年份的看番数，请手动填写“看番数 (今年)”。“追番”和“累计”可同步。</p>
             </section>
 
             <!-- Section 2: Rankings -->
-            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度排名</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div id="rank-air-1" class="manual-container"></div>
@@ -85,7 +105,7 @@
             </section>
 
             <!-- Section 3: Characters & CP -->
-            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度角色</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div id="char-female" class="manual-container"></div>
@@ -102,7 +122,7 @@
             </section>
             
             <!-- Section 4: Music -->
-            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-700 pb-2">年度音乐与声优</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div id="music-op" class="manual-container"></div>
@@ -115,70 +135,113 @@
             </section>
 
             <!-- Section 5: Episodes -->
-            <section class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <section class="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h2 class="text-2xl font-semibold">年度单集</h2>
                     <button id="add-episode-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition text-sm">
                         + 添加单集
                     </button>
                 </div>
-                <div id="episodes-container" class="space-y-4">
-                    <!-- Episode entries will be added here -->
-                </div>
+                <div id="episodes-container" class="space-y-4"></div>
             </section>
             
-            <div class="text-center pt-4">
-                 <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg">
+            <div class="text-center pt-4 pb-8">
+                 <button id="generate-summary" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg ring-4 ring-indigo-500/30">
                     生成年度小结
                 </button>
             </div>
         </main>
     </div>
 
-    <!-- Modals -->
-    <div id="manual-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
-            <div class="p-4 border-b border-gray-700 flex justify-between items-center">
-                <h3 class="text-xl font-semibold">手动输入条目</h3>
-                <button class="close-modal-btn text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+    <!-- Smart Input Modal -->
+    <div id="smart-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
+        <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all scale-100">
+            <div class="p-5 border-b border-gray-700 flex justify-between items-center bg-gray-800 rounded-t-xl">
+                <h3 class="text-xl font-bold text-white">添加条目内容</h3>
+                <button class="close-modal-btn text-gray-400 hover:text-white text-2xl leading-none transition">&times;</button>
             </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label for="manual-name" class="block text-sm font-medium text-gray-400 mb-1">条目名称</label>
-                    <input type="text" id="manual-name" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="例如：孤独摇滚！">
+            
+            <div class="p-6">
+                <!-- Tabs -->
+                <div class="flex space-x-4 border-b border-gray-700 mb-4">
+                    <button class="tab-btn px-4 py-2 text-indigo-400 border-b-2 border-indigo-500 font-medium" data-tab="id">ID 自动获取 (推荐)</button>
+                    <button class="tab-btn px-4 py-2 text-gray-400 hover:text-gray-200" data-tab="manual">手动输入</button>
                 </div>
-                <div>
-                    <label for="manual-image-url" class="block text-sm font-medium text-gray-400 mb-1">图片地址</label>
-                    <input type="text" id="manual-image-url" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="粘贴图片链接...">
+
+                <!-- Tab Content: ID -->
+                <div id="tab-id" class="tab-content space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Bangumi Subject ID / Person ID</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="api-id-input" class="flex-1 bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="例如: 394597">
+                            <button id="fetch-api-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-md font-medium transition flex items-center">
+                                获取
+                                <div id="api-loader" class="loader ml-2 hidden" style="width: 16px; height: 16px; border-width: 2px;"></div>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">提示：ID 是网址中 subject/ 或 character/ 后的数字。</p>
+                    </div>
+                    <!-- Preview Area -->
+                    <div id="api-preview" class="hidden mt-4 p-3 bg-gray-700/50 rounded-lg flex gap-3 items-center border border-gray-600">
+                        <img id="api-preview-img" src="" class="w-12 h-16 object-cover rounded bg-gray-800">
+                        <div class="flex-1 min-w-0">
+                            <p id="api-preview-title" class="font-bold text-white truncate"></p>
+                            <p class="text-xs text-green-400">获取成功</p>
+                        </div>
+                        <button id="confirm-api-btn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">确认使用</button>
+                    </div>
+                    <p id="api-error" class="hidden text-red-400 text-sm mt-2"></p>
                 </div>
-            </div>
-            <div class="p-4 bg-gray-700/50 text-right">
-                <button id="manual-confirm-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">确认</button>
+
+                <!-- Tab Content: Manual -->
+                <div id="tab-manual" class="tab-content space-y-4 hidden">
+                    <div>
+                        <label for="manual-name" class="block text-sm font-medium text-gray-300 mb-1">条目名称</label>
+                        <input type="text" id="manual-name" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="例如：孤独摇滚！">
+                    </div>
+                    <div>
+                        <label for="manual-image-url" class="block text-sm font-medium text-gray-300 mb-1">图片地址</label>
+                        <input type="text" id="manual-image-url" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2.5 focus:ring-2 focus:ring-indigo-500 text-white" placeholder="粘贴图片链接...">
+                    </div>
+                    <div class="pt-2 text-right">
+                        <button id="manual-confirm-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md transition">确认添加</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="summary-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
-         <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col relative">
+    <!-- Summary Modal -->
+    <div id="summary-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50 hidden backdrop-blur-sm">
+         <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col relative border border-gray-700">
             <div class="absolute top-4 right-4 z-10">
-                 <button class="close-modal-btn bg-gray-700 text-gray-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center text-xl leading-none">&times;</button>
+                 <button class="close-modal-btn bg-gray-700/80 text-gray-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center text-xl leading-none backdrop-blur-md transition hover:bg-gray-600">&times;</button>
             </div>
-            <div id="summary-content" class="p-8 overflow-y-auto"></div>
+            <div id="summary-content" class="p-8 overflow-y-auto custom-scrollbar"></div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const itemConfig = {
-                'rank-air-1': { label: '年度排名1 (播出)' }, 'rank-end-1': { label: '年度排名1 (完结)' },
-                'rank-end-2': { label: '年度排名2 (完结)' }, 'rank-end-3': { label: '年度排名3 (完结)' },
-                'char-female': { label: '女性角色' }, 'char-male': { label: '男性角色' },
-                'char-other': { label: '其他角色' }, 'cp-1': { label: 'CP 1' }, 'cp-2': { label: 'CP 2' },
-                'music-op': { label: 'OP' }, 'music-ed': { label: 'ED' }, 'music-in': { label: 'IN' },
-                'music-artist': { label: '歌手' }, 'staff-seiyuu-female': { label: '女性声优' },
-                'staff-seiyuu-male': { label: '男性声优' },
+                'rank-air-1': { label: '年度排名1 (播出)', type: 'subject' }, 
+                'rank-end-1': { label: '年度排名1 (完结)', type: 'subject' },
+                'rank-end-2': { label: '年度排名2 (完结)', type: 'subject' }, 
+                'rank-end-3': { label: '年度排名3 (完结)', type: 'subject' },
+                'char-female': { label: '女性角色', type: 'character' }, 
+                'char-male': { label: '男性角色', type: 'character' },
+                'char-other': { label: '其他角色', type: 'character' }, 
+                'cp-1': { label: 'CP 1', type: 'character' }, 
+                'cp-2': { label: 'CP 2', type: 'character' },
+                'music-op': { label: 'OP', type: 'subject' }, 
+                'music-ed': { label: 'ED', type: 'subject' }, 
+                'music-in': { label: 'IN', type: 'subject' },
+                'music-artist': { label: '歌手', type: 'person' }, 
+                'staff-seiyuu-female': { label: '女性声优', type: 'person' },
+                'staff-seiyuu-male': { label: '男性声优', type: 'person' },
             };
 
+            // Initialize Containers
             const containers = document.querySelectorAll('.manual-container');
             containers.forEach(container => {
                 const id = container.id;
@@ -187,67 +250,252 @@
                 const showLabel = !container.dataset.labelHidden;
                 container.innerHTML = `
                     ${showLabel ? `<label class="block text-sm font-medium text-gray-400 mb-1">${config.label}</label>` : ''}
-                    <div class="relative manual-trigger" data-target-id="${id}">
-                        <img id="img-${id}" class="w-full h-40 object-cover rounded-md bg-gray-700 hidden">
-                        <div id="placeholder-${id}" class="w-full h-40 rounded-md bg-gray-700 flex items-center justify-center placeholder-image cursor-pointer">
-                             <span class="text-gray-500 text-sm">点击添加</span>
+                    <div class="relative manual-trigger group" data-target-id="${id}" data-api-type="${config.type}">
+                        <img id="img-${id}" class="w-full h-40 object-cover rounded-md bg-gray-700 hidden shadow-md">
+                        <div id="placeholder-${id}" class="w-full h-40 rounded-md bg-gray-700/50 border-2 border-dashed border-gray-600 flex flex-col items-center justify-center placeholder-image cursor-pointer group-hover:border-indigo-500 transition-colors">
+                             <svg class="w-8 h-8 text-gray-500 mb-1 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                             <span class="text-gray-500 text-xs group-hover:text-indigo-300">点击添加</span>
                         </div>
                         <input type="hidden" id="data-name-${id}"><input type="hidden" id="data-img-${id}">
                     </div>`;
             });
 
-            const manualModal = document.getElementById('manual-modal');
+            // --- Elements ---
+            const smartModal = document.getElementById('smart-modal');
             const summaryModal = document.getElementById('summary-modal');
-            const manualConfirmBtn = document.getElementById('manual-confirm-btn');
-            const addEpisodeBtn = document.getElementById('add-episode-btn');
             const episodesContainer = document.getElementById('episodes-container');
-            let currentTargetId = null;
-            let episodeCounter = 0;
-
+            
+            // Basic Info Inputs
             const watchingCountInput = document.getElementById('watching-count');
             const watchedCountInput = document.getElementById('watched-count');
             const rewatchedCountInput = document.getElementById('rewatched-count');
+            const totalWatchedInput = document.getElementById('total-watched');
+            const usernameInput = document.getElementById('bangumi-username');
+            const nicknameDisplay = document.getElementById('user-nickname');
+            const avatarPreview = document.getElementById('user-avatar-preview');
+            
+            // Sync Button
+            const syncBtn = document.getElementById('sync-user-btn');
+            
+            // Modal Elements
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const apiIdInput = document.getElementById('api-id-input');
+            const fetchApiBtn = document.getElementById('fetch-api-btn');
+            const apiLoader = document.getElementById('api-loader');
+            const apiPreview = document.getElementById('api-preview');
+            const apiPreviewImg = document.getElementById('api-preview-img');
+            const apiPreviewTitle = document.getElementById('api-preview-title');
+            const apiError = document.getElementById('api-error');
+            const confirmApiBtn = document.getElementById('confirm-api-btn');
+            const manualConfirmBtn = document.getElementById('manual-confirm-btn');
 
+            let currentTargetId = null;
+            let currentApiType = 'subject'; // subject, character, person
+            let episodeCounter = 0;
+            let tempApiData = null; // Store fetched data temporarily
+
+            // --- Logic: User Sync ---
+            syncBtn.addEventListener('click', async () => {
+                const username = usernameInput.value.trim();
+                if (!username) { alert("请输入 Bangumi 用户名"); return; }
+                
+                const btnText = syncBtn.querySelector('.btn-text');
+                const loader = syncBtn.querySelector('.loader');
+                
+                btnText.textContent = "同步中...";
+                loader.classList.remove('hidden');
+                syncBtn.disabled = true;
+
+                try {
+                    // 1. Fetch User Profile (Avatar, Nickname)
+                    // Using legacy API because v0/users/{username} is sometimes stricter or has different shape, 
+                    // but v0 is generally preferred. Let's use v0 if possible, fallback to scraping logic if needed? 
+                    // Actually, v0/users/{username} is robust.
+                    const userRes = await fetch(`https://api.bgm.tv/v0/users/${username}`);
+                    if (!userRes.ok) throw new Error("用户未找到");
+                    const userData = await userRes.json();
+                    
+                    nicknameDisplay.value = userData.nickname;
+                    avatarPreview.src = userData.avatar.large;
+
+                    // 2. Fetch User Collections Stats
+                    // Endpoint: /v0/users/{username}/collections
+                    // But we want counts. Legacy API /user/{username} returns counts in the HTML usually, but API 
+                    // has /v0/users/{username} returning 'user_group'. 
+                    // Actually, we need to fetch specific status to get counts if the main profile doesn't have it.
+                    // Wait, /v0/users/{username} DOES NOT return counts.
+                    // We must use the legacy /user/{username} (returns HTML) or separate calls.
+                    // Let's try getting the user's progress.
+                    // The public API doesn't expose a simple "stats" endpoint easily without auth in v0.
+                    // EXCEPT: https://api.bgm.tv/user/{username} (Legacy JSON) - This is deprecated but might still work?
+                    // Let's try to fetch collection data.
+                    
+                    // Workaround: We will rely on user input for precise yearly numbers, 
+                    // but we can try to get "Watching" and "Total" from a different angle if possible.
+                    // Actually, for a static page, we might just have to fetch the user's collection list? No, too heavy.
+                    // Let's try the legacy endpoint which is often still alive for read-only.
+                    // If legacy fails, we just update avatar/nickname.
+                    
+                    try {
+                        // Legacy endpoint usually returns stats in the 'status' field? No.
+                        // We will try to fetch the avatar/name which we did. 
+                        // For stats, we might be out of luck with a pure frontend public API without OAuth for counts specifically 
+                        // unless we scrape (which we shouldn't). 
+                        // WAIT! We can check https://api.bgm.tv/v0/users/{username}/collections?subject_type=2&type=3&limit=0
+                        // The 'total' field in pagination might give us the count!
+                        
+                        // Fetch Watching (Type 3)
+                        const watchingRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=3&limit=1`);
+                        const watchingData = await watchingRes.json();
+                        if (watchingData.total !== undefined) {
+                            watchingCountInput.value = watchingData.total;
+                            calculateRewatched(); // Recalc
+                        }
+
+                        // Fetch Total Watched (Type 2) - Cumulative
+                        const watchedRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
+                        const watchedData = await watchedRes.json();
+                        if (watchedData.total !== undefined) {
+                            totalWatchedInput.value = watchedData.total;
+                        }
+
+                    } catch (e) {
+                        console.warn("Stats fetch failed, but profile loaded", e);
+                    }
+
+                } catch (error) {
+                    alert("同步失败: " + error.message);
+                } finally {
+                    btnText.textContent = "同步数据";
+                    loader.classList.add('hidden');
+                    syncBtn.disabled = false;
+                }
+            });
+
+            // --- Logic: Calculations ---
             function calculateRewatched() {
+                // Rewatched (补番) = Watched this year - Watching (wait, logic check)
+                // Logic update based on previous conversation:
+                // "补番数" = "看番数 (今年) - 追番数 (今年)"
+                // Note: Watching usually means "Currently Watching" in Bangumi terms, but here the user
+                // defined it as "New shows from this year".
+                // Let's stick to the math: Rewatched = WatchedCount - WatchingCount.
+                
                 const watching = parseInt(watchingCountInput.value, 10) || 0;
                 const watched = parseInt(watchedCountInput.value, 10) || 0;
                 const rewatched = watched - watching;
+                // If negative, just show 0
                 rewatchedCountInput.value = rewatched >= 0 ? rewatched : 0;
             }
-
             watchingCountInput.addEventListener('input', calculateRewatched);
             watchedCountInput.addEventListener('input', calculateRewatched);
-            calculateRewatched(); // Initial calculation
 
-            function selectItem(name, imageUrl) {
-                if (!currentTargetId) return;
-                const img = document.getElementById(`img-${currentTargetId}`);
-                const placeholder = document.getElementById(`placeholder-${currentTargetId}`);
-                const nameInput = document.getElementById(`data-name-${currentTargetId}`);
-                const imgInput = document.getElementById(`data-img-${currentTargetId}`);
-                img.src = imageUrl;
-                img.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                nameInput.value = name;
-                imgInput.value = imageUrl;
-                manualModal.classList.add('hidden');
-            }
 
+            // --- Logic: Modal & Item Selection ---
+            
+            // Open Modal
             document.body.addEventListener('click', (e) => {
                 const trigger = e.target.closest('.manual-trigger');
                 if (trigger) {
                     currentTargetId = trigger.dataset.targetId;
+                    currentApiType = trigger.dataset.apiType || 'subject'; // Default subject
+                    
+                    // Reset Modal State
+                    apiIdInput.value = '';
+                    apiPreview.classList.add('hidden');
+                    apiError.classList.add('hidden');
                     document.getElementById('manual-name').value = document.getElementById(`data-name-${currentTargetId}`).value;
                     document.getElementById('manual-image-url').value = document.getElementById(`data-img-${currentTargetId}`).value;
-                    manualModal.classList.remove('hidden');
+                    
+                    // Switch to ID tab by default
+                    switchTab('id');
+                    smartModal.classList.remove('hidden');
                 }
             });
 
+            // Tab Switching
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchTab(btn.dataset.tab);
+                });
+            });
+
+            function switchTab(tabName) {
+                tabBtns.forEach(b => {
+                    if (b.dataset.tab === tabName) {
+                        b.classList.add('text-indigo-400', 'border-indigo-500');
+                        b.classList.remove('text-gray-400');
+                    } else {
+                        b.classList.remove('text-indigo-400', 'border-indigo-500');
+                        b.classList.add('text-gray-400');
+                    }
+                });
+                tabContents.forEach(c => c.classList.add('hidden'));
+                document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            }
+
+            // API Fetch by ID
+            fetchApiBtn.addEventListener('click', async () => {
+                const id = apiIdInput.value.trim();
+                if (!id) return;
+                
+                apiLoader.classList.remove('hidden');
+                apiError.classList.add('hidden');
+                apiPreview.classList.add('hidden');
+                tempApiData = null;
+
+                try {
+                    // Determine endpoint based on type
+                    // subject: /v0/subjects/{id}
+                    // character: /v0/characters/{id}
+                    // person: /v0/persons/{id}
+                    let endpoint = `https://api.bgm.tv/v0/subjects/${id}`;
+                    if (currentApiType === 'character') endpoint = `https://api.bgm.tv/v0/characters/${id}`;
+                    if (currentApiType === 'person') endpoint = `https://api.bgm.tv/v0/persons/${id}`;
+
+                    const res = await fetch(endpoint, { headers: { 'User-Agent': 'BangumiYearReview/1.0' } });
+                    if (!res.ok) throw new Error("ID 未找到或网络错误");
+                    
+                    const data = await res.json();
+                    
+                    // Extract data (Subject/Person/Character have similar 'name' and 'images' fields in v0)
+                    const name = data.name_cn || data.name;
+                    const img = data.images?.large || data.images?.medium || 'https://placehold.co/225x318/1f2937/374151?text=No+Img';
+                    
+                    // Fix protocol relative urls
+                    const finalImg = img.startsWith('//') ? `https:${img}` : img;
+
+                    tempApiData = { name, img: finalImg };
+                    
+                    // Show Preview
+                    apiPreviewImg.src = finalImg;
+                    apiPreviewTitle.textContent = name;
+                    apiPreview.classList.remove('hidden');
+
+                } catch (err) {
+                    apiError.textContent = err.message;
+                    apiError.classList.remove('hidden');
+                } finally {
+                    apiLoader.classList.add('hidden');
+                }
+            });
+
+            // Confirm API Data
+            confirmApiBtn.addEventListener('click', () => {
+                if (tempApiData) {
+                    applyItemData(tempApiData.name, tempApiData.img);
+                    smartModal.classList.add('hidden');
+                }
+            });
+
+            // Confirm Manual Data
             manualConfirmBtn.addEventListener('click', () => {
                 const name = document.getElementById('manual-name').value;
                 const imageUrl = document.getElementById('manual-image-url').value;
                 if (name && imageUrl) {
-                    selectItem(name, imageUrl);
+                    applyItemData(name, imageUrl);
+                    smartModal.classList.add('hidden');
                 } else {
                     const nameInput = document.getElementById('manual-name');
                     if (!name) nameInput.focus();
@@ -255,47 +503,79 @@
                 }
             });
 
-            addEpisodeBtn.addEventListener('click', () => {
+            function applyItemData(name, imageUrl) {
+                if (!currentTargetId) return;
+                const img = document.getElementById(`img-${currentTargetId}`);
+                const placeholder = document.getElementById(`placeholder-${currentTargetId}`);
+                const nameInput = document.getElementById(`data-name-${currentTargetId}`);
+                const imgInput = document.getElementById(`data-img-${currentTargetId}`);
+                
+                img.src = imageUrl;
+                img.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                nameInput.value = name;
+                imgInput.value = imageUrl;
+            }
+
+            // --- Logic: Episodes ---
+            document.getElementById('add-episode-btn').addEventListener('click', () => {
                 episodeCounter++;
                 const animeId = `ep-anime-${episodeCounter}`;
                 const entry = document.createElement('div');
-                entry.className = 'episode-entry flex items-end space-x-4 p-3 bg-gray-700/50 rounded-lg';
+                entry.className = 'episode-entry flex items-end space-x-4 p-3 bg-gray-700/50 rounded-lg border border-gray-600 mb-4';
                 entry.id = `episode-${episodeCounter}`;
+                
+                // Note: default api-type for episode anime is 'subject'
                 entry.innerHTML = `
                     <div class="w-1/3 manual-container">
-                        <label class="block text-sm font-medium text-gray-400 mb-1">动画</label>
-                        <div class="relative manual-trigger" data-target-id="${animeId}">
+                        <label class="block text-xs font-medium text-gray-400 mb-1">动画</label>
+                        <div class="relative manual-trigger group" data-target-id="${animeId}" data-api-type="subject">
                             <img id="img-${animeId}" class="w-full h-24 object-cover rounded-md bg-gray-700 hidden">
-                            <div id="placeholder-${animeId}" class="w-full h-24 rounded-md bg-gray-700 flex items-center justify-center placeholder-image cursor-pointer">
+                            <div id="placeholder-${animeId}" class="w-full h-24 rounded-md bg-gray-700 flex flex-col items-center justify-center placeholder-image cursor-pointer border border-dashed border-gray-500 hover:border-indigo-500">
                                  <span class="text-gray-500 text-xs">点击添加</span>
                             </div>
                             <input type="hidden" id="data-name-${animeId}"><input type="hidden" id="data-img-${animeId}">
                         </div>
                     </div>
                     <div class="flex-1">
-                        <label for="ep-number-${episodeCounter}" class="block text-sm font-medium text-gray-400 mb-1">集数</label>
-                        <input type="number" id="ep-number-${episodeCounter}" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500" placeholder="Ep.">
+                        <label class="block text-xs font-medium text-gray-400 mb-1">集数</label>
+                        <input type="number" id="ep-number-${episodeCounter}" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="Ep.">
+                        <button class="text-red-400 text-xs mt-2 hover:underline" onclick="this.closest('.episode-entry').remove()">删除</button>
                     </div>
                 `;
                 episodesContainer.appendChild(entry);
             });
 
+            // Close Modals
             document.querySelectorAll('.close-modal-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    manualModal.classList.add('hidden');
+                    smartModal.classList.add('hidden');
                     summaryModal.classList.add('hidden');
                 });
             });
 
+            // --- Logic: Generate Summary ---
             const generateBtn = document.getElementById('generate-summary');
             generateBtn.addEventListener('click', () => {
+                const year = document.getElementById('year').value || '2025';
+                const currentYearWatched = parseInt(watchingCountInput.value, 10) || 0;
+                const totalWatchedThisYear = parseInt(watchedCountInput.value, 10) || 0;
+                const rewatched = parseInt(rewatchedCountInput.value, 10) || 0;
+                const total = parseInt(totalWatchedInput.value, 10) || 0;
+                
+                const username = usernameInput.value || 'Anonymous';
+                const avatar = avatarPreview.src;
+                const nickname = nicknameDisplay.value || username;
+
                 const data = { 
-                    year: document.getElementById('year').value || 'N/A', 
-                    watching: document.getElementById('watching-count').value || '0', 
-                    watched: document.getElementById('watched-count').value || '0', 
-                    rewatched: document.getElementById('rewatched-count').value || '0',
-                    total: document.getElementById('total-watched').value || '0',
-                    username: document.getElementById('bangumi-username').value || 'Anonymous',
+                    year, 
+                    watching: currentYearWatched, 
+                    watched: totalWatchedThisYear, 
+                    rewatched,
+                    total,
+                    username,
+                    nickname,
+                    avatar,
                     items: {},
                     episodes: []
                 };
@@ -308,14 +588,19 @@
                     }; 
                 });
                 
-                document.querySelectorAll('.episode-entry').forEach((entry, index) => {
-                    const counter = index + 1;
-                    const animeId = `ep-anime-${counter}`;
-                    data.episodes.push({
-                        name: document.getElementById(`data-name-${animeId}`).value,
-                        img: document.getElementById(`data-img-${animeId}`).value,
-                        number: document.getElementById(`ep-number-${counter}`).value
-                    });
+                document.querySelectorAll('.episode-entry').forEach((entry) => {
+                    const idPart = entry.id.split('-')[1]; // get number from episode-1
+                    const animeId = `ep-anime-${idPart}`;
+                    const numInput = document.getElementById(`ep-number-${idPart}`);
+                    
+                    // Safety check if elements exist
+                    if (numInput && document.getElementById(`data-name-${animeId}`)) {
+                         data.episodes.push({
+                            name: document.getElementById(`data-name-${animeId}`).value,
+                            img: document.getElementById(`data-img-${animeId}`).value,
+                            number: numInput.value
+                        });
+                    }
                 });
 
                 renderSummary(data);
@@ -323,21 +608,109 @@
             });
 
             function renderSummary(data) {
-                const placeholder = 'https://placehold.co/225x318/1f2937/374151?text=未选择';
-                const getItemHTML = (id) => { const item = data.items[id]; if (!item) return ''; const img = item.img || placeholder; const name = item.name || '未填写'; return `<div class="text-center"><p class="text-sm text-gray-400 mb-2">${item.label}</p><img src="${img}" class="w-full h-40 object-cover rounded-md mx-auto shadow-md" alt="${name}"><p class="mt-2 text-sm font-semibold truncate" title="${name}">${name}</p></div>`; };
-                const getCpHTML = () => { const i1 = data.items['cp-1'], i2 = data.items['cp-2']; const img1 = i1.img || placeholder, n1 = i1.name || '?', img2 = i2.img || placeholder, n2 = i2.name || '?'; const fn = `${n1} & ${n2}`; return `<div class="text-center"><p class="text-sm text-gray-400 mb-2">CP</p><div class="flex justify-center items-end space-x-[-20px]"><img src="${img1}" class="w-24 h-32 object-cover rounded-md shadow-md z-10 transform -rotate-6" alt="${n1}"><img src="${img2}" class="w-24 h-32 object-cover rounded-md shadow-md transform rotate-6" alt="${n2}"></div><p class="mt-2 text-sm font-semibold truncate" title="${fn}">${fn}</p></div>`; };
-                const getEpisodeHTML = (episode) => {
-                    const img = episode.img || placeholder;
-                    const name = episode.name || '未填写动画';
-                    const number = episode.number ? ` Ep.${episode.number}` : '';
-                    const fullName = `${name}${number}`;
-                    return `<div class="text-center"><img src="${img}" class="w-full h-28 object-cover rounded-md mx-auto shadow-md" alt="${name}"><p class="mt-2 text-xs font-semibold truncate" title="${fullName}">${fullName}</p></div>`;
+                const placeholder = 'https://placehold.co/225x318/1f2937/374151?text=Empty';
+                
+                const getItemHTML = (id) => { 
+                    const item = data.items[id]; 
+                    if (!item) return ''; 
+                    const img = item.img || placeholder; 
+                    const name = item.name || '-'; 
+                    return `
+                    <div class="text-center group">
+                        <p class="text-[10px] text-indigo-300 mb-1 uppercase tracking-wider">${item.label}</p>
+                        <div class="overflow-hidden rounded-lg shadow-lg aspect-[3/4] mb-2 relative">
+                            <img src="${img}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500" alt="${name}">
+                        </div>
+                        <p class="text-xs font-bold truncate text-gray-200" title="${name}">${name}</p>
+                    </div>`; 
                 };
 
-                const episodesHTML = data.episodes.length > 0 ? `<div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度单集</h3><div class="grid grid-cols-3 md:grid-cols-5 gap-4">${data.episodes.map(getEpisodeHTML).join('')}</div></div>` : '';
-                const year = data.year;
+                const getCpHTML = () => {
+                    const i1 = data.items['cp-1'], i2 = data.items['cp-2'];
+                    const img1 = i1.img || placeholder, n1 = i1.name || '';
+                    const img2 = i2.img || placeholder, n2 = i2.name || '';
+                    return `
+                    <div class="col-span-2 md:col-span-1 text-center">
+                         <p class="text-[10px] text-pink-300 mb-1 uppercase tracking-wider">最佳 CP</p>
+                         <div class="flex justify-center items-end h-32 md:h-40 relative">
+                             <img src="${img1}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl z-10 transform -rotate-6 border-2 border-gray-800" alt="${n1}">
+                             <img src="${img2}" class="w-20 h-28 md:w-24 md:h-32 object-cover rounded-lg shadow-xl transform rotate-6 ml-[-15px] border-2 border-gray-800" alt="${n2}">
+                         </div>
+                         <p class="text-xs font-bold truncate text-pink-100 mt-2">${n1} & ${n2}</p>
+                    </div>`;
+                };
 
-                document.getElementById('summary-content').innerHTML = `<div class="bg-gray-900 text-white p-6 rounded-lg"><h2 class="text-center text-3xl font-bold mb-1">${year} Bangumi 年度小结</h2><p class="text-center text-indigo-400 mb-4">@${data.username}</p><div class="text-center text-gray-400 mb-6 flex justify-center space-x-4 md:space-x-6 text-sm"><span>${year}年追番数: <strong>${data.watching}</strong></span><span>${year}年补番数: <strong>${data.rewatched}</strong></span><span>${year}年看番数: <strong>${data.watched}</strong></span><span>累计看番数: <strong>${data.total}</strong></span></div><div class="space-y-6"><div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度动画</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4">${getItemHTML('rank-air-1')}${getItemHTML('rank-end-1')}${getItemHTML('rank-end-2')}${getItemHTML('rank-end-3')}</div></div><div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度角色</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-start">${getItemHTML('char-female')}${getItemHTML('char-male')}${getItemHTML('char-other')}${getCpHTML()}</div></div><div><h3 class="font-semibold text-lg mb-3 text-center border-b border-gray-700 pb-2">年度音乐与声优</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4">${getItemHTML('music-op')}${getItemHTML('music-ed')}${getItemHTML('music-in')}${getItemHTML('music-artist')}${getItemHTML('staff-seiyuu-female')}${getItemHTML('staff-seiyuu-male')}</div></div>${episodesHTML}</div></div>`;
+                const getEpHTML = (ep) => `
+                    <div class="text-center">
+                        <div class="overflow-hidden rounded-md shadow aspect-video mb-1">
+                            <img src="${ep.img || placeholder}" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-[10px] font-bold text-gray-300 truncate">${ep.name}</p>
+                        <p class="text-[10px] text-indigo-400">Ep.${ep.number}</p>
+                    </div>`;
+
+                const episodesSection = data.episodes.length > 0 ? `
+                    <div class="mt-6 pt-4 border-t border-gray-700/50">
+                        <h3 class="text-sm font-bold text-gray-400 mb-3 text-center">年度单集</h3>
+                        <div class="grid grid-cols-4 md:grid-cols-6 gap-3">
+                            ${data.episodes.map(getEpHTML).join('')}
+                        </div>
+                    </div>` : '';
+
+                // Summary Layout
+                document.getElementById('summary-content').innerHTML = `
+                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-xl shadow-2xl relative overflow-hidden">
+                        <!-- Header -->
+                        <div class="flex items-center space-x-4 mb-8 relative z-10">
+                            <img src="${data.avatar}" class="w-16 h-16 rounded-full border-4 border-indigo-500 shadow-lg">
+                            <div>
+                                <h2 class="text-3xl font-black italic tracking-tighter">${data.year}</h2>
+                                <p class="text-sm text-indigo-300 font-medium tracking-wide">ANIMATION YEAR IN REVIEW</p>
+                                <p class="text-xs text-gray-500 mt-0.5">@${data.nickname}</p>
+                            </div>
+                            <div class="ml-auto flex space-x-6 text-right">
+                                <div><p class="text-2xl font-bold text-white">${data.watching}</p><p class="text-[10px] text-gray-400 uppercase">追番(今年)</p></div>
+                                <div><p class="text-2xl font-bold text-white">${data.watched}</p><p class="text-[10px] text-gray-400 uppercase">看番(今年)</p></div>
+                                <div><p class="text-2xl font-bold text-indigo-400">${data.total}</p><p class="text-[10px] text-gray-400 uppercase">累计</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                            <!-- Col 1: Anime -->
+                            <div class="space-y-4">
+                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Top Anime</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    ${getItemHTML('rank-air-1')}${getItemHTML('rank-end-1')}
+                                    ${getItemHTML('rank-end-2')}${getItemHTML('rank-end-3')}
+                                </div>
+                            </div>
+                            <!-- Col 2: Characters -->
+                            <div class="space-y-4">
+                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Characters</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    ${getItemHTML('char-female')}${getItemHTML('char-male')}
+                                    ${getItemHTML('char-other')}
+                                </div>
+                                ${getCpHTML()}
+                            </div>
+                            <!-- Col 3: Music & Staff -->
+                            <div class="space-y-4">
+                                <h3 class="text-xs font-bold text-gray-500 uppercase border-b border-gray-700 pb-1">Music & Voice</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    ${getItemHTML('music-op')}${getItemHTML('music-ed')}
+                                    ${getItemHTML('music-artist')}${getItemHTML('staff-seiyuu-female')}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${episodesSection}
+
+                        <!-- Footer Decoration -->
+                        <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+                        <div class="absolute -top-10 -left-10 w-64 h-64 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    </div>
+                `;
             }
         });
     </script>
