@@ -123,7 +123,7 @@
                         <label for="total-watched" class="block text-xs font-medium text-gray-400 mb-1">累计看番数</label>
                         <input type="number" id="total-watched"
                             class="save-target w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500"
-                            placeholder="所有看过">
+                            placeholder="截至该年看过">
                     </div>
                 </div>
                 <p id="sync-status" class="text-xs text-gray-500 mt-2 italic h-4"></p>
@@ -426,9 +426,10 @@
             });
 
             // --- Sync Logic ---
-            async function fetchUserStats(username, targetYear) {
+            async function fetchUserStats(username, targetYear, currentTotal) {
                 let finishedThisYear = 0;
                 let newShowsFinished = 0;
+                let futureCount = 0; // Count items watched after the target year
                 const limit = 50;
                 let page = 0;
                 let hasMore = true;
@@ -449,7 +450,10 @@
                             const itemYearStr = updated.substring(0, 4);
                             const itemYearInt = parseInt(itemYearStr, 10);
 
-                            if (itemYearInt > targetYearInt) { continue; }
+                            if (itemYearInt > targetYearInt) {
+                                futureCount++; // Increment count for future items
+                                continue;
+                            }
                             else if (itemYearInt === targetYearInt) {
                                 finishedThisYear++;
                                 const airDate = item.subject?.date || "";
@@ -460,7 +464,10 @@
                         page++;
                     } catch (e) { console.error(e); break; }
                 }
-                return { finishedThisYear, newShowsFinished };
+
+                // Calculate total up to end of target year: Current Total - Future Watched
+                const totalUpToYear = currentTotal - futureCount;
+                return { finishedThisYear, newShowsFinished, totalUpToYear };
             }
 
             document.getElementById('sync-user-btn').addEventListener('click', async () => {
@@ -485,15 +492,17 @@
                     inputs.avatar.src = userData.avatar.large;
                     inputs.avatarHidden.value = userData.avatar.large;
 
-                    // Total
+                    // Total (Get current live total)
                     const totalRes = await fetch(`https://api.bgm.tv/v0/users/${username}/collections?subject_type=2&type=2&limit=1`);
                     const totalData = await totalRes.json();
-                    if (totalData.total !== undefined) { inputs.total.value = totalData.total; }
+                    const currentTotal = totalData.total || 0;
 
-                    // Stats
-                    const stats = await fetchUserStats(username, targetYear);
+                    // Stats (Pass currentTotal to function)
+                    const stats = await fetchUserStats(username, targetYear, currentTotal);
+
                     inputs.watched.value = stats.finishedThisYear;
                     inputs.watching.value = stats.newShowsFinished;
+                    inputs.total.value = stats.totalUpToYear; // Set the calculated historical total
 
                     calculateRewatched();
                     saveState();
